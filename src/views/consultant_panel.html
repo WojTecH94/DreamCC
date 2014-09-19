@@ -1,0 +1,26 @@
+{% extends "_layout.html" %}
+
+{% block title %}Panel{% endblock %}
+
+{% block content %}
+    <h1>Index</h1>
+    <p class="important">
+        Welcome to my awesome homepage.
+    </p>
+
+    <form class='navbar-form navbar-right' action='index.php' method=post>
+        <div class='form-group'>
+            {% if message %}
+                <span class='alert alert-danger'>{{ message }}</span>
+            {% endif %}
+        </div>
+        <div class='form-group'>
+            <input type='text' placeholder='login' class='form-control' name='login'>
+        </div>
+        <div class='form-group'>
+            <input type='password' placeholder='Password' class='form-control' name='haslo'>
+        </div>
+        <button type='submit' value='Submit' class='btn btn-success'>Zaloguj</button>
+    </form>
+
+{% endblock %}
