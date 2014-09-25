@@ -3,8 +3,8 @@ containers:
         image: michaloo/webdev
         run:
             publish: ["80:80"]
-            volume: [".:/dreamcc", "src:/var/www/html"]
-            homedir: /dreamcc
+            volume: [".:/var/www"]
+            workdir: /var/www
             interactive: true
             tty: true
             rm: true

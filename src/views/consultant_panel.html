@@ -3,24 +3,136 @@
 {% block title %}Panel{% endblock %}
 
 {% block content %}
+
+
+    {% if not user.is_logged %}
     <h1>Index</h1>
     <p class="important">
         Welcome to my awesome homepage.
     </p>
+    {% else %}
 
-    <form class='navbar-form navbar-right' action='index.php' method=post>
-        <div class='form-group'>
-            {% if message %}
-                <span class='alert alert-danger'>{{ message }}</span>
-            {% endif %}
-        </div>
-        <div class='form-group'>
-            <input type='text' placeholder='login' class='form-control' name='login'>
-        </div>
-        <div class='form-group'>
-            <input type='password' placeholder='Password' class='form-control' name='haslo'>
-        </div>
-        <button type='submit' value='Submit' class='btn btn-success'>Zaloguj</button>
-    </form>
+
+
+<!-- rysowanie wykresów start -->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["gauge"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        // rozmowy przeprowadzone/h
+        var succeeded = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['', 0]
+        ]);
+
+        var succeeded_options = {
+          width: 250, height: 250,
+          redFrom: 18, redTo: 20,
+          yellowFrom: 15, yellowTo: 18,
+          minorTicks: 5, max: 20
+        };
+
+        // wybranych rekordów/h
+        var tries = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['', 0]
+        ]);
+
+        var tries_options = {
+            width: 250, height: 250,
+          redFrom: 35, redTo: 40,
+          yellowFrom:30, yellowTo: 35,
+          minorTicks: 10, max: 40
+        };
+
+        // pozostało do przedzwonienia
+        var left = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['', 0]
+        ]);
+
+        var left_options = {
+            width: 250, height: 250,
+         // redFrom: 26, redTo: 30,
+         // yellowFrom:20, yellowTo: 26,
+         minorTicks: {{ user.getContactsTicks() }}, //obliczenie ile powinno być kreseczek
+          max: {{ user.getContacts }} //wstawienie ilości kontaktów do przedzwonienia
+        };
+
+        // średni czas rozmowy
+        var time = google.visualization.arrayToDataTable([
+          ['Label', 'Value'],
+          ['', 0]
+        ]);
+
+        var time_options = {
+            width: 250, height: 250,
+          greenFrom: 0, greenTo: 10,
+          minorTicks: 15, max: 30
+        };
+
+        var succeeded_chart = new google.visualization.Gauge(document.getElementById('succeeded_div'));
+        succeeded_chart.draw(succeeded, succeeded_options);
+        var tries_chart = new google.visualization.Gauge(document.getElementById('tries_div'));
+        tries_chart.draw(tries, tries_options);
+        var left_chart = new google.visualization.Gauge(document.getElementById('left_div'));
+        left_chart.draw(left, left_options);
+        var time_chart = new google.visualization.Gauge(document.getElementById('time_div'));
+        time_chart.draw(time, time_options);
+
+        // ustawianie wartości wykresów po sekundzie - dzięki temu widać animację
+        setTimeout(function() {
+          succeeded.setValue(0, 1, {{ user.getSucceeded }}); //wstawienie wartości pobranej z bazy
+          succeeded_chart.draw(succeeded, succeeded_options);
+        }, 500);
+        setTimeout(function() {
+          tries.setValue(0, 1, {{ user.getTries }}); //wstawienie wartości pobranej z bazy
+          tries_chart.draw(tries, tries_options);
+        }, 500);
+        setTimeout(function() {
+          left.setValue(0, 1, {{ user.getContacts - user.getContactsLeft }}); //obliczenie ile kontaktów przedzwoniono
+          left_chart.draw(left, left_options);
+        }, 500);
+        setTimeout(function() {
+          time.setValue(0, 1, {{ user.getAvgTime }}); // średni czas
+          time_chart.draw(time, time_options);
+        }, 500);
+      }
+
+    </script>
+<!-- rysowanie wykresów end -->
+
+
+
+
+    <h1>Witaj {{ user.login }}</h1>
+    <div style="display: inline-block; text-align: center">
+        <div id="succeeded_div" ></div>
+        <p>Przeprowadzonych/h</p>
+    </div>
+    <div style="display: inline-block; text-align: center">
+        <div id="tries_div" ></div>
+        <p syle="text-align: center">Wybranych/h</p>
+    </div>
+    <div style="display: inline-block; text-align: center">
+        <div id="left_div" ></div>
+        <p>Przedzwoniono</p>
+    </div>
+    <div style="display: inline-block; text-align: center">
+        <div id="time_div" ></div>
+        <p>Śr. czas rozmowy (m)</p>
+    </div>
+
+
+    <p style="clear: both">
+        <a class="btn btn-primary btn-lg" role="button" href="/contact">Pobierz rekord &raquo;</a>
+        <a class="btn btn-primary btn-lg" role="button" href="/contact/search">Wyszukaj rekord &raquo;</a>
+        <a class="btn btn-primary btn-lg" role="button" href="/contact/rescheduled">Przełożone rozmowy &raquo;</a>
+        <a class="btn btn-primary btn-lg" role="button" href="/contact/left">Nieprzedzwonione kontakty &raquo;</a>
+    </p>
+    </div>
+
+    {% endif %}
 
 {% endblock %}

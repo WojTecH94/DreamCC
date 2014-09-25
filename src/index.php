@@ -2,27 +2,17 @@
 
 require 'vendor/autoload.php';
 
-$app = new \Slim\Slim(array(
-    'view' => new \Slim\Views\Twig()
-));
-$app->config(array(
-    'debug' => true,
-    'templates.path' => dirname(__FILE__) . '/views'
-));
+require_once './bootstrap.php';
 
-$view = $app->view();
+session_cache_limiter(false);
+session_start();
 
-$view->parserExtensions = array(
-    new \Slim\Views\TwigExtension(),
-);
+$mainController = $container['main_controller'];
+$app            = $container['app'];
+$log            = $container['log'];
 
-$view->parserOptions = array(
-    'debug' => true,
-    'cache' => dirname(__FILE__) . '/cache'
-);
 
-$controller = new \Dreamcc\Controller\Main();
-
-$controller->setup($app);
-
+$mainController->setup();
 $app->run();
+
+$log->addDebug("App run");
