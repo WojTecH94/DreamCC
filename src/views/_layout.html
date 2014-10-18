@@ -10,10 +10,11 @@
         <title>{% block title %}{% endblock %} - DreamCC</title>
 
         <!-- Bootstrap core CSS -->
-        <link href="/assets/dist/css/bootstrap.css" rel="stylesheet">
+        <link href="{{ baseUrl() }}/assets/dist/css/bootstrap.css" rel="stylesheet">
+
 
         <!-- Custom styles for this template -->
-        <link href="/assets/jumbotron.css" rel="stylesheet">
+        <link href="{{ baseUrl() }}/assets/jumbotron.css" rel="stylesheet">
 
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -30,16 +31,16 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">Call Center</a>
+                    <a class="navbar-brand" href="{{ urlFor('index') }}">Call Center</a>
                 </div>
                 <div class="navbar-collapse collapse">
 
                     {% if user.is_logged %}
                     <div class='navbar-form navbar-right'>
-                        <a href='/logout' class='btn btn-success'>Wyloguj</a>
+                        <a href='{{ urlFor('logout') }}' class='btn btn-success'>Wyloguj</a>
                     </div>
                     {% else %}
-                    <form class="navbar-form navbar-right" action="/" method="post">
+                    <form class="navbar-form navbar-right" action="{{ urlFor('login') }}" method="post">
                         <div class="form-group">
                             {% if message %}
                             <span class="alert alert-danger">{{ message }}</span>
@@ -86,7 +87,7 @@
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-        <script src="/assets/dist/js/bootstrap.min.js"></script>
+        <script src="{{ baseUrl() }}/assets/dist/js/bootstrap.min.js"></script>
 
         <div id="footer">
             {% block footer %}
