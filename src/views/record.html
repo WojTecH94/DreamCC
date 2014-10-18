@@ -1,0 +1,22 @@
+{% extends "_layout.html" %}
+
+{% block title %}Record{% endblock %}
+
+{% block content %}
+
+{% if result.num_rows > 0 %}
+
+    {% set contact = result.fetch_assoc() %}
+    {{ contact.tok }}
+    {{ contact.firstname }}
+    {{ contact.lastname }}
+    {{ contact.status }}
+    {{ contact.attempt }}
+    <p><a target="_blank" class="btn btn-primary btn-lg" role="button" href="{{ genLink(contact, user) }}">Przejdź do ankiety &raquo;</a>
+    <a class="btn btn-primary btn-lg" role="button" href="/contact">Pobierz kolejny &raquo;</a></p>
+
+{% else %}
+W tym momencie brak wolnych rekordów. Poczekaj aż rekordy wrócą do bazy
+{% endif %}
+
+{% endblock %}

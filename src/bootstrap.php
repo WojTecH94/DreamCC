@@ -27,7 +27,10 @@ $container['config'] = array(
     ),
 
     "view" => array(
-        "path" => dirname(__FILE__) . '/views'
+        "path" => dirname(__FILE__) . '/views',
+        "options" => array(
+            "debug" => true,
+        )
     ),
 
     "app" => array(
@@ -51,7 +54,14 @@ $container['log'] = function ($c) {
 
 $container['view'] = function ($c) {
     $loader = new Twig_Loader_Filesystem($c["config"]["view"]["path"]);
-    return new Twig_Environment($loader);
+    $twig   = new Twig_Environment($loader, $c["config"]["view"]["options"]);
+
+    $twig->addExtension(new \Slim\Views\TwigExtension());
+    $twig->addExtension(new Twig_Extension_Debug());
+
+    $twig->addExtension(new \Dreamcc\Lib\TwigContactExtension($c['config']));
+
+    return $twig;
 };
 
 $container['cache'] = function ($c) {
@@ -78,7 +88,7 @@ $container['app'] = function($c) {
 };
 
 $container['contact_model'] = function($c) {
-    return new \Dreamcc\Model\Contact($c['db'], $c['log']);
+    return new \Dreamcc\Model\Contact($c['db'], $c['log'], $c['cache']);
 };
 
 $container['user_model'] = function($c) {

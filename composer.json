@@ -18,7 +18,8 @@
         "twig/twig": "1.*",
         "pimple/pimple": "~3.0",
         "monolog/monolog": "1.10.*",
-        "desarrolla2/cache": "1.7.*"
+        "desarrolla2/cache": "1.7.*",
+        "slim/views": "0.1.*"
     },
     "config": {
         "vendor-dir": "src/vendor"

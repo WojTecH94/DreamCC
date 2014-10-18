@@ -1,0 +1,18 @@
+{% extends "_layout.html" %}
+
+{% block title %}Rezerwacja{% endblock %}
+
+{% block content %}
+
+    {% if result.num_rows > 0 %}
+
+        {% set contact = result.fetch_assoc() %}
+
+        {{ present(contact)|raw }}
+        <p><a target="_blank" class="btn btn-primary btn-lg" role="button" href="{{ genLink(contact, user) }}">Przejdź do ankiety &raquo;</a>
+
+    {% else %}
+    Błąd - nie udało się zarezerwować rekordu
+    {% endif %}
+
+{% endblock %}

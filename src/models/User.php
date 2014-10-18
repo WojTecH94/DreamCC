@@ -28,24 +28,15 @@ class User {
 
         $this->log->addDebug("user constructor");
 
-        if (isset($_SESSION["user"])) {
-
-            $this->login     = $_SESSION["user"];
-            $this->is_logged = true;
-        }
-
-        $this->log->addDebug("user status", array($this));
-
         return $this;
     }
 
-    function authorize($login, $pass) {
+    function login($login, $pass) {
 
         if (isset($this->users[$login]) &&
             $pass == $this->users[$login]) {
 
-            $this->is_logged = true;
-            $this->login     = $login;
+            $_SESSION["user"] = $login;
 
             $this->log->addDebug("user logged in");
         }
@@ -54,25 +45,15 @@ class User {
     }
 
     function logout() {
-        $this->is_logged = false;
-        $this->login     = null;
-    }
-
-
-    function __destruct() {
-
-        if ($this->is_logged === true) {
-            return $_SESSION["user"] = $this->login;
-        }
-
         unset($_SESSION["user"]);
+        return $this;
     }
 
     protected function _getValue($query, $param) {
 
-        if ($this->cache->get('user_' . $param)) {
-            return $this->cache->get('user_' . $param);
-        }
+        // if ($this->cache->get('user_' . $param)) {
+        //     return $this->cache->get('user_' . $param);
+        // }
 
         $this->log->addDebug("get value", array($query, $param));
 
@@ -80,17 +61,44 @@ class User {
 
         if($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $this->cache->set('user_' . $param, $row[$param], 10);
+            // $this->cache->set('user_' . $param, $row[$param], 10);
             return $row[$param];
         }
 
         return 0;
     }
 
-    function getTries() {
+    function get($full = false) {
+
+        if (isset($_SESSION["user"])) {
+
+            $login = $_SESSION["user"];
+            $data  = array();
+
+            if ($full) {
+                $data['contacts']       = $this->getContacts($login);
+                $data['contacts_ticks'] = $this->getContactsTicks($data['contacts']);
+                $data['succeeded']      = $this->getSucceeded($login);
+                $data['tries']          = $this->getTries($login);
+                $data['contacts_left']  = $this->getContactsLeft($login);
+                $data['avg_time']       = $this->getAvgTime($login);
+
+            }
+
+            return array(
+                'login'     => $login,
+                'is_logged' => true,
+                'data'      => $data
+            );
+        }
+
+        return array('is_logged' => false);
+    }
+
+    function getTries($login) {
 
         // pobieranie ilośći wybranych rekordów w ostatniej godzinie przez obecnie zalogowanego użytkownika
-        $login = $this->db->escape_string($this->login);
+        $login = $this->db->escape_string($login);
 
         $query = "SELECT tries FROM no_of_tries WHERE operator = '{$login}'";
 
@@ -98,44 +106,44 @@ class User {
 
     }
 
-    function getSucceeded() {
+    function getSucceeded($login) {
         // pobieranie ilości przeprowadzonych rozmów w ciągu ostatniej godziny
-        $login = $this->db->escape_string($this->login);
+        $login = $this->db->escape_string($login);
         $query = "SELECT succeeded FROM no_of_succeeded WHERE operator ='{$login}'";
 
         return $this->_getValue($query, "succeeded");
     }
 
-    function getContacts() {
+    function getContacts($login) {
         // pobieranie ilości rekordów przypisanych do konsultanta
-        $login = $this->db->escape_string($this->login);
+        $login = $this->db->escape_string($login);
         $query = "SELECT COUNT(1) AS `contacts`
             FROM v_contacts WHERE operator = '{$login}' GROUP BY operator";
 
         return $this->_getValue($query, "contacts");
     }
 
-    function getContactsLeft() {
+    function getContactsLeft($login) {
 
         // pobieranie ilości rekordów nieprzedzwonionych przez konsultanta
-        $login = $this->db->escape_string($this->login);
+        $login = $this->db->escape_string($login);
         $query = "SELECT COUNT(1) AS `left`
             FROM v_left_contacts WHERE operator = '{$login}' GROUP BY operator";
 
         return $this->_getValue($query, "left");
     }
 
-    function getAvgTime() {
+    function getAvgTime($login) {
 
         // pobieranie średniego czasu potrzebnego do przeprowadzenia skutecznej rozmowy
-        $login = $this->db->escape_string($this->login);
+        $login = $this->db->escape_string($login);
         $query = "SELECT avg_time FROM v_avg_timings WHERE operator = '{$login}'";
 
         return $this->_getValue($query, "avg_time");
     }
 
-    function getContactsTicks() {
-        return ceil($this->getContacts() / 4);
+    function getContactsTicks($contacts) {
+        return ceil($contacts / 4);
     }
 
 

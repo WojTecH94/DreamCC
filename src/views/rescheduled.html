@@ -1,0 +1,16 @@
+{% extends "_layout.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Record{% endblock %}
+
+{% block content %}
+
+    {% if result.num_rows > 0 %}
+
+    {{ macros.table(result) }}
+
+    {% else %}
+    W tym momencie brak wolnych rekordów. Poczekaj aż rekordy wrócą do bazy
+    {% endif %}
+
+{% endblock %}
