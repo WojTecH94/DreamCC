@@ -57,7 +57,8 @@ class Main {
         $pass  = $this->app->request->post('pass');
 
         $this->user->login($login, $pass);
-        $this->app->response->redirect('/', 303);
+        $url = $this->app->urlFor('index');
+        $this->app->response->redirect($url, 303);
 
     }
 
@@ -65,7 +66,8 @@ class Main {
 
         $this->log->addDebug("logout route");
         $this->user->logout();
-        $this->app->response->redirect('/', 303);
+        $url = $this->app->urlFor('index');
+        $this->app->response->redirect($url, 303);
 
     }
 
