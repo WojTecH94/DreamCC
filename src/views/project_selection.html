@@ -3,6 +3,8 @@
 {% block title %}Select project{% endblock %}
 
 {% block content %}
+
+<h1>Wybierz bazę/projekt</h1>
 <p>
     {% for project in projects %}
     <a class="btn btn-primary btn-lg" role="button" href="{{ urlFor('contact') }}?project={{ project.project }}">{{ project.project }} &raquo;</a>
