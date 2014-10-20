@@ -13,9 +13,6 @@ class DbConf {
     var $busyDelay = 15; //minutes
     var $respondentMissingDelay = 3; //hours 
     
-    
-    
-    
     function __construct($db, $log, $cache) {
 
         $this->db    = $db;
@@ -64,6 +61,13 @@ class DbConf {
         
         return $this;
     }
+    
+    
+    function getProjects(){
+        
+        return $this->projects;
+    }
+    
     
     function createViews(){
        $msg[0] = $this->createContactsView();

@@ -13,11 +13,11 @@ class Contact {
         return $this;
     }
 
-    function get($user) {
+    function get($user, $project) {
         
         //TODO: good concurrency control
         $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_available_contacts LIMIT 1
+                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_available_contacts WHERE project = '{$project}' LIMIT 1
 SQL;
         $r1 = $this->db->query($query1);
         

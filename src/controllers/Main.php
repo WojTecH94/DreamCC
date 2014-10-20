@@ -25,7 +25,9 @@ class Main {
         $this->app->get('/logout', array($this, 'logout'))->name('logout');
 
         $this->app->get('/contact', array($this, 'contact'))->name('contact');
-
+        
+        $this->app->get('/project/select', array($this, 'select_project'))->name('select_project');
+        
         $this->app->get('/contact/search', array($this, 'contact_search_form'))
             ->name('contact_search_form');
         $this->app->post('/contact/search', array($this, 'contact_search_post'))
@@ -37,7 +39,7 @@ class Main {
             ->name('contact_left');
         $this->app->get('/contact/reserve', array($this, 'contact_reserve'))
             ->name('contact_reserve');
-
+      
         $this->app->get('/admin/prepare_views', array($this, 'prepare_views'))->name('prepare_views');
 
         
@@ -81,15 +83,31 @@ class Main {
         $this->log->addDebug("contact route");
 
         $user   = $this->user->get();
-        $result = $this->contact->get($user);
-
+        $project   = $this->app->request->get('project');
+        $result = $this->contact->get($user, $project); //add project parameter
+        
         $body = $this->view->render('record.html', array(
             'user'   => $user,
             'result' => $result
         ));
         $this->app->response->setBody($body);
     }
+    
+    function select_project() {
+        $this->log->addDebug("project selection route");
 
+        $user       = $this->user->get();
+        $projects   = $this->dbconf->getProjects();
+        $body = $this->view->render('project_selection.html', array(
+            'user' => $user,
+            'projects' => $projects
+        ));
+        
+        $this->app->response->setBody($body);
+    }
+    
+    
+    
     function contact_search_form() {
 
         $this->log->addDebug("contact_search route");
