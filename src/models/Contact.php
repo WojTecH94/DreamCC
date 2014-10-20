@@ -15,27 +15,33 @@ class Contact {
 
     function get($user) {
         
-        $this->db->query("SET AUTOCOMMIT=0");
-        $this->db->query("START TRANSACTION");
-
         //TODO: good concurrency control
-        $query = "SELECT token, firstname, lastname, status, attempt, project  FROM v_available_contacts LIMIT 1";
-        $r1 = $this->db->query($query);
+        $query1 = <<<SQL
+                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_available_contacts LIMIT 1
+SQL;
+        $r1 = $this->db->query($query1);
         
+        //fetch variables needed for the next queries
         $row = mysqli_fetch_array($r1);
         $token = $row['token'];
         $project = $row['project'];
-        $sid = 
-        $query = <<<SQL
-                UPDATE lime_survey_{$sid} SET submitdate = null, lastpage = null WHERE token = {$token}
-SQL;
-        $r2 = $this->db->query($query);
+        $sid = $row['sid'];
         
-        $query = <<<SQL
-                    UPDATE lime_tokens_{$sid} SET attribute_1 = '{$user}', attribute_2 = CURRENT_TIMESTAMP() WHERE token = {$token}
+        $query2 = <<<SQL
+                UPDATE lime_survey_{$sid} SET submitdate = null, lastpage = null WHERE token = '{$token}'
 SQL;
-        $r3 = $this->db->query($query);
-        
+        $r2 = $this->db->query($query2);
+
+        $query3 = <<<SQL
+                UPDATE lime_tokens_{$sid} SET attribute_1 = '{$user['login']}', attribute_2 = CURRENT_TIMESTAMP() WHERE token = '{$token}'
+SQL;
+        $r3 = $this->db->query($query3);
+
+        //same query as the first one, but after fetch_assoc $result didn't work
+        $query = <<<SQL
+                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_contacts WHERE token = '{$token}' AND sid = '{$sid}'
+SQL;
+        $result = $this->db->query($query);
         
         return $result;
     }
@@ -69,11 +75,33 @@ SQL;
 
     function reserve($user, $token) {
 
-        $query = "CALL reserve_defined_token('{$user['login']}','{$token}')";
+        $query1 = <<<SQL
+                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_contacts WHERE token = '{$token}'
+SQL;
+        $r1 = $this->db->query($query1);
         
+        //fetch variables needed for the next queries
+        $row = mysqli_fetch_array($r1);
+        $token = $row['token'];
+        $project = $row['project'];
+        $sid = $row['sid'];
         
-        
+        $query2 = <<<SQL
+                UPDATE lime_survey_{$sid} SET submitdate = null, lastpage = null WHERE token = '{$token}'
+SQL;
+        $r2 = $this->db->query($query2);
+
+        $query3 = <<<SQL
+                UPDATE lime_tokens_{$sid} SET attribute_1 = '{$user['login']}', attribute_2 = CURRENT_TIMESTAMP() WHERE token = '{$token}'
+SQL;
+        $r3 = $this->db->query($query3);
+
+        //same query as the first one, but after fetch_assoc $result didn't work
+        $query = <<<SQL
+                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_contacts WHERE token = '{$token}' AND sid = '{$sid}'
+SQL;
         $result = $this->db->query($query);
+        
         return $result;
     }
 
