@@ -19,12 +19,20 @@ $container['config'] = array(
         "attempt_question_id"  => "635363X1409X20320" //id pytania o próbę dotarcia
     ),
 
-    "db" => array(
+    // production db
+    /*"db" => array(
         'server'   => 'sql.wiosna.org.pl',
         'username' => 'serwer_wiosny_06',
         'password' => 'Xn4F9YlG5dt9',
         'database' => 'serwer_wiosny_06',
-    ),
+    ), */
+    // dev db
+    "db" => array(
+        'server'   => 'sql.wiosna.org.pl',
+        'username' => '04827858_limedev',
+        'password' => 'a&F6@EE,b%cB',
+        'database' => '04827858_limedev',
+    ), 
 
     "view" => array(
         "path" => dirname(__FILE__) . '/views',
@@ -95,10 +103,14 @@ $container['user_model'] = function($c) {
     return new \Dreamcc\Model\User($c['db'], $c['log'], $c['cache']);
 };
 
+$container['dbconf_model'] = function($c) {
+    return new \Dreamcc\Model\DbConf($c['db'], $c['log'], $c['cache']);
+};
+
 $container['lime_model'] = function($c) {
     return new \Dreamcc\Model\Lime($c['config'], $c['log']);
 };
 
 $container['main_controller'] = function($c) {
-    return new \Dreamcc\Controller\Main($c['app'], $c['view'], $c['log'], $c['contact_model'], $c['user_model']);
+    return new \Dreamcc\Controller\Main($c['app'], $c['view'], $c['log'], $c['contact_model'], $c['user_model'], $c['dbconf_model']);
 };

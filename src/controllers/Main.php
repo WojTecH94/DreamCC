@@ -6,7 +6,7 @@ class Main {
 
     var $app;
 
-    function __construct($app, $view, $log, $contact, $user) {
+    function __construct($app, $view, $log, $contact, $user, $dbconf) {
 
         $this->app  = $app;
         $this->view = $view;
@@ -14,6 +14,7 @@ class Main {
 
         $this->contact = $contact;
         $this->user    = $user;
+        $this->dbconf  = $dbconf;
     }
 
     function setup() {
@@ -36,6 +37,10 @@ class Main {
             ->name('contact_left');
         $this->app->get('/contact/reserve', array($this, 'contact_reserve'))
             ->name('contact_reserve');
+
+        $this->app->get('/admin/prepare_views', array($this, 'prepare_views'))->name('prepare_views');
+
+        
     }
 
     function index() {
@@ -152,6 +157,13 @@ class Main {
             'result' => $result
         ));
         $this->app->response->setBody($body);
+    }
+    
+    function prepare_views() {
+        //echo "test";
+        $msg    = $this->dbconf->makeViews();
+        //echo "test2";
+        echo $msg;
     }
 
 }
