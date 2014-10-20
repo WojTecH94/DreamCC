@@ -26,6 +26,7 @@ $container['config'] = array(
         'password' => 'Xn4F9YlG5dt9',
         'database' => 'serwer_wiosny_06',
     ), */
+    
     // dev db
     "db" => array(
         'server'   => 'sql.wiosna.org.pl',

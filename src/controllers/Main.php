@@ -160,10 +160,11 @@ class Main {
     }
     
     function prepare_views() {
-        //echo "test";
-        $msg    = $this->dbconf->makeViews();
-        //echo "test2";
-        echo $msg;
+        //$msg    = $this->dbconf->createViews();
+        //var_dump($msg);
+        
+        $msg    = $this->dbconf->createReports();
+        var_dump($msg);
     }
 
 }
