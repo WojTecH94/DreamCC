@@ -32,8 +32,8 @@ class Contact {
         $query = <<<SQL
         SELECT
             firstname, lastname,
-            token, operator,
-            IF(reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15,'wolny', 'zarezerwowany') AS reserved,
+            token, operator, project,
+            IF(reservation_date= '' OR reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15,'wolny', 'zarezerwowany') AS reserved,
             status, attempt, contact_date,
             consultant, reschedule_date, notes
         FROM v_contacts
@@ -59,8 +59,8 @@ SQL;
     function search($lastname, $number) {
         $query = <<<SQL
         SELECT
-            firstname, lastname, token, number, operator,
-            IF(reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15, 'wolny', 'zarezerwowany') AS reserved,
+            firstname, lastname, token, number, operator, project,
+            IF(reservation_date= '' OR reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15, 'wolny', 'zarezerwowany') AS reserved,
             status, attempt, contact_date -- , notes
         FROM v_contacts
         WHERE lastname LIKE '{$lastname}' OR number LIKE '{$number}'

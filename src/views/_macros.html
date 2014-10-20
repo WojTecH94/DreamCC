@@ -6,8 +6,9 @@
             <th>Nazwisko</th>
             <th>Status</th>
             <th>Próba dotarcia</th>
-            <th>Uwagi po rozmowie</th>
+         <!--   <th>Uwagi po rozmowie</th> -->
             <th>Rezerwacja</th>
+            <th>Projekt</th>
             <th>Ankieta&raquo;</th>
         </tr>
         {% for i in 1..(result.num_rows) %}
@@ -18,8 +19,9 @@
             <td>{{ contact.lastname }}</td>
             <td>{{ contact.status }}</td>
             <td>{{ contact.attempt }}</td>
-            <td>{{ contact.notes }}</td>
+           <!--  <td>{{ contact.notes }}</td> -->
             <td>{{ contact.reserved }}</td>
+            <td>{{ contact.project }}</td>
             {# link do reserve przekazujący tokena w GECIE #}
             <td><a href="{{ urlFor('contact_reserve') }}?token={{ contact.token }}">Ankieta&raquo;</a></td>
         </tr>

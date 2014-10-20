@@ -68,6 +68,7 @@ class DbConf {
     function createViews(){
        $msg[0] = $this->createContactsView();
        $msg[1] = $this->createAvailableContactsView();
+       $msg[2] = $this->createLeftView();
        return $msg;
     }
     
@@ -148,6 +149,25 @@ SQL;
         $result = $this->db->query($query);
         return $result;
     }
+    
+    //creates v_left_contacts view
+    function createLeftView(){
+        $query = <<<SQL
+                CREATE VIEW v_left_contacts AS
+                    SELECT * FROM v_contacts
+                          WHERE 
+                                (attempt IN ('Pierwsza','Druga','') OR attempt IS NULL) -- (Próba dotarcia IN ('Pierwsza', 'Druga',) OR Próba dotarcia is  NULL)
+                                AND (
+                                      (status IN ('Nie odbiera','Automatyczna sekretarka','Zajęty','Numer dobry, brak klienta','')) -- (Status IN (Nie odbiera,  Automatyczna sekretarka))
+                                      OR
+                                      (status is NULL)
+                                    )
+SQL;
+        $result = $this->db->query($query);
+        return $result;
+    }
+    
+    
     
     function createReports(){
         //tries report
