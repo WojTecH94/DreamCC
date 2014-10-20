@@ -14,8 +14,29 @@ class Contact {
     }
 
     function get($user) {
-        $query = "CALL reserve_token('{$user['login']}')";
-        $result = $this->db->query($query);
+        
+        $this->db->query("SET AUTOCOMMIT=0");
+        $this->db->query("START TRANSACTION");
+
+        //TODO: good concurrency control
+        $query = "SELECT token, firstname, lastname, status, attempt, project  FROM v_available_contacts LIMIT 1";
+        $r1 = $this->db->query($query);
+        
+        $row = mysqli_fetch_array($r1);
+        $token = $row['token'];
+        $project = $row['project'];
+        $sid = 
+        $query = <<<SQL
+                UPDATE lime_survey_{$sid} SET submitdate = null, lastpage = null WHERE token = {$token}
+SQL;
+        $r2 = $this->db->query($query);
+        
+        $query = <<<SQL
+                    UPDATE lime_tokens_{$sid} SET attribute_1 = '{$user}', attribute_2 = CURRENT_TIMESTAMP() WHERE token = {$token}
+SQL;
+        $r3 = $this->db->query($query);
+        
+        
         return $result;
     }
 

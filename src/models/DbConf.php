@@ -91,6 +91,7 @@ class DbConf {
                     survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['consultant']} AS consultant  -- konsultant z odpowiedzi, po wypełnieniu ankiety powinien być ten sam co operator
                     -- survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['contactDate']} AS notes -- uwagi po rozmowie
                     ,'{$this->projects[0]['project']}' AS project
+                    ,'{$this->projects[0]['sid']}' AS sid
               FROM lime_tokens_{$this->projects[0]['sid']} token
                   LEFT JOIN lime_survey_{$this->projects[0]['sid']} survey ON token.token = survey.token
                   LEFT JOIN lime_answers status ON status.qid = {$this->projects[0]['qids']['status']} AND survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['status']} = status.code
@@ -114,6 +115,7 @@ SQL;
                             survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['consultant']} AS consultant  -- konsultant z odpowiedzi, po wypełnieniu ankiety powinien być ten sam co operator
                             -- survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['contactDate']} AS notes -- uwagi po rozmowie
                             ,'{$this->projects[$i]['project']}' AS project
+                            ,'{$this->projects[$i]['sid']}' AS sid
                       FROM lime_tokens_{$this->projects[$i]['sid']} token
                           LEFT JOIN lime_survey_{$this->projects[$i]['sid']} survey ON token.token = survey.token
                           LEFT JOIN lime_answers status ON status.qid = {$this->projects[$i]['qids']['status']} AND survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['status']} = status.code
@@ -219,17 +221,7 @@ SQL;
    }
    
    
-   function createProcedures(){
-       $query = <<<SQL
-               CREATE PROCEDURE reserve_token(user varchar(50), project varchar(50))
-                BEGIN
-                  SELECT @tok := token AS tok, firstname, lastname, status, attempt  FROM v_available_contacts WHERE project = @project LIMIT 1;
-                  UPDATE lime_survey_254117 SET submitdate = null, lastpage = null WHERE token = @tok;
-                  UPDATE lime_tokens_254117 SET attribute_1 = user, attribute_2 = CURRENT_TIMESTAMP() WHERE token = @tok;
-                --  SELECT @tok AS token;
-                END;
-SQL;
-   }
+
 
     
 }
