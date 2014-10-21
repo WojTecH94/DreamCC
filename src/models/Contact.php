@@ -37,12 +37,6 @@ SQL;
 SQL;
         $r3 = $this->db->query($query3);
 
-        //same query as the first one, but after fetch_assoc $result didn't work
-        /*
-        $query = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_contacts WHERE token = '{$token}' AND sid = '{$sid}'
-SQL;
-        $result = $this->db->query($query);*/
         
         return $row;
     }
@@ -77,12 +71,12 @@ SQL;
     function reserve($user, $token) {
 
         $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_contacts WHERE token = '{$token}'
+                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_contacts WHERE token = '{$token}'
 SQL;
         $r1 = $this->db->query($query1);
         
         //fetch variables needed for the next queries
-        $row = mysqli_fetch_array($r1);
+        $row = mysqli_fetch_assoc($r1);
         $token = $row['token'];
         $project = $row['project'];
         $sid = $row['sid'];
@@ -97,13 +91,8 @@ SQL;
 SQL;
         $r3 = $this->db->query($query3);
 
-        //same query as the first one, but after fetch_assoc $result didn't work
-        $query = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid  FROM v_contacts WHERE token = '{$token}' AND sid = '{$sid}'
-SQL;
-        $result = $this->db->query($query);
         
-        return $result;
+        return $row;
     }
 
     function search($lastname, $number) {

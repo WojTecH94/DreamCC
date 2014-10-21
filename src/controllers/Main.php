@@ -170,7 +170,7 @@ class Main {
         $token   = $this->app->request->get('token');
         $result  = $this->contact->reserve($user, $token);
 
-        $body = $this->view->render('reserve.html', array(
+        $body = $this->view->render('record.html', array(
             'user'   => $user,
             'result' => $result
         ));
