@@ -97,7 +97,7 @@ class Main {
         $this->log->addDebug("project selection route");
 
         $user       = $this->user->get();
-        $projects   = $this->dbconf->getProjects();
+        $projects   = $this->contact->getAvailableContactsPerProject();
         $body = $this->view->render('project_selection.html', array(
             'user' => $user,
             'projects' => $projects

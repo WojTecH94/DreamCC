@@ -49,6 +49,12 @@ SQL;
 
         return $result;
     }
+    
+    function getAvailableContactsPerProject(){
+        $query = "SELECT project, sid, operator_gid, operator_qid, COUNT(1) as cnt  FROM v_available_contacts GROUP BY project, sid, operator_gid, operator_qid";
+        $result = $this->db->query($query);
+        return $result;
+    }
 
     function getRescheduled($user) {
         $query = <<<SQL
