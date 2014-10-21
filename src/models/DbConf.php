@@ -24,7 +24,7 @@ class DbConf {
             "sid" => '777',
             "gid" => '1416',
             "qids" => array(
-               "status" => '20361',
+               "status" => '20362',
                "attempt" => '20363',
                "contactDate" => '20361',
                "rescheduleDate" => '20366',
@@ -70,10 +70,29 @@ class DbConf {
     
     
     function createViews(){
-       $msg[0] = $this->createContactsView();
-       $msg[1] = $this->createAvailableContactsView();
-       $msg[2] = $this->createLeftView();
+       $msg[0] = $this->dropViews();
+       $msg[1] = $this->createContactsView();
+       $msg[2] = $this->createAvailableContactsView();
+       $msg[3] = $this->createLeftView();
        return $msg;
+    }
+    
+    function dropViews(){
+        $query = "DROP VIEW no_of_succeeded";
+        $result[0] = $this->db->query($query);
+        $query = "DROP VIEW no_of_tries";
+        $result[1] = $this->db->query($query);
+        $query = "DROP VIEW v_available_contacts";
+        $result[2] = $this->db->query($query);
+        $query = "DROP VIEW v_avg_timings";
+        $result[3] = $this->db->query($query);
+        $query = "DROP VIEW v_contacts";
+        $result[4] = $this->db->query($query);
+        $query = "DROP VIEW v_left_contacts";
+        $result[5] = $this->db->query($query);
+        $query = "DROP VIEW v_timings";
+        $result[6] = $this->db->query($query);
+        return $result;
     }
     
     //creates view v_contacts
@@ -168,7 +187,7 @@ SQL;
                           WHERE 
                                 (attempt IN ('Pierwsza','Druga','') OR attempt IS NULL) -- (Próba dotarcia IN ('Pierwsza', 'Druga',) OR Próba dotarcia is  NULL)
                                 AND (
-                                      (status IN ('Nie odbiera','Automatyczna sekretarka','Zajęty','Numer dobry, brak klienta','')) -- (Status IN (Nie odbiera,  Automatyczna sekretarka))
+                                      (status IN ('Inny termin','Nie odbiera','Automatyczna sekretarka','Zajęty','Numer dobry, brak klienta','')) -- (Status IN (Nie odbiera,  Automatyczna sekretarka))
                                       OR
                                       (status is NULL)
                                     )

@@ -57,7 +57,7 @@ SQL;
             token, operator, project,
             IF(reservation_date= '' OR reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15,'wolny', 'zarezerwowany') AS reserved,
             status, attempt, contact_date,
-            consultant, reschedule_date, notes
+            consultant, reschedule_date -- , notes
         FROM v_contacts
         WHERE consultant = '{$user['login']}' AND status = 'Inny termin'
         ORDER BY reschedule_date ASC
