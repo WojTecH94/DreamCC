@@ -1,0 +1,37 @@
+Aby skonfigurować projekt Call Center należy:
+1.	Utworzyć ankietę w Lime Survey zawierającą przynajmniej pola podstawowe:
+	•	Status
+		o	Przeprowadzona
+		o	Inny termin
+		o	Nie odbiera
+		o	Błędny numer
+		o	Nie dzwonić
+		o	Zajęty
+		o	Numer dobry, brak klienta
+		o	Automatyczna sekretarka
+	•	Próba dotarcia
+		o	Pierwsza
+		o	Druga
+		o	Trzecia
+	•	Data kontaktu
+	•	Konsultant
+	•	Na kiedy przełożono rozmowę
+	•	Uwagi po rozmowie
+	
+2.	Utworzyć tokeny i dodać przynajmniej takie atrybuty:
+	•	attribute_1 – konsultant
+	•	attribute_2 – data rezerwacji
+	•	attribute_3 – numer telefonu
+
+3. Zamiast punktów 1,2 powyższych można odpalić SQL new_survey.sql z odpowiednimi parametrami
+	•	sprawdzić czy skrypt wykonał to co powyżej 
+	•	UWAGA: skrypt na ten moment nie tworzy pola Uwagi po rozmowie
+
+4. W bootstrap skonfigurować adres LimeSurvey oraz dane dostępowe do bazy.
+
+5. W modelu DbConf skonfigurować tablicę projects.
+	•	wpisać id ankiety - sid, id grupy pytań podstawowych - gid, id odpowiednich pytań - qid
+	
+6. Odpalić src/admin/prepare_views
+
+7. Sprawdzić czy utworzyło się 7 widoków
