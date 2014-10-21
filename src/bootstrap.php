@@ -12,13 +12,17 @@ $container = new Container();
 
 $container['config'] = array(
 
+    //production address
+    /*
     "lime" => array(
-        "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/", //adres do ankiet LimeSurvey
-        "sid"     => "635363", //id ankiety
-        "operator_question_id" => "635363X1409X20325", //id pytania o konsultanta
-        "attempt_question_id"  => "635363X1409X20320" //id pytania o próbę dotarcia
+        "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/" //adres do ankiet LimeSurvey
     ),
-
+    */
+    //dev address
+    "lime" => array(
+        "address" => "http://ankiety-dev.wiosna.org.pl/ankiety-dev/index.php/survey/index/" //adres do ankiet LimeSurvey
+    ),
+    
     // production db
     /*"db" => array(
         'server'   => 'sql.wiosna.org.pl',

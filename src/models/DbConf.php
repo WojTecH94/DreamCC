@@ -96,6 +96,8 @@ class DbConf {
                     -- survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['contactDate']} AS notes -- uwagi po rozmowie
                     ,'{$this->projects[0]['project']}' AS project
                     ,'{$this->projects[0]['sid']}' AS sid
+                    ,'{$this->projects[0]['gid']}' AS operator_gid
+                    ,'{$this->projects[0]['qids']['consultant']}' AS operator_qid
               FROM lime_tokens_{$this->projects[0]['sid']} token
                   LEFT JOIN lime_survey_{$this->projects[0]['sid']} survey ON token.token = survey.token
                   LEFT JOIN lime_answers status ON status.qid = {$this->projects[0]['qids']['status']} AND survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['status']} = status.code
@@ -120,6 +122,8 @@ SQL;
                             -- survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['contactDate']} AS notes -- uwagi po rozmowie
                             ,'{$this->projects[$i]['project']}' AS project
                             ,'{$this->projects[$i]['sid']}' AS sid
+                            ,'{$this->projects[$i]['gid']}' AS operator_gid
+                            ,'{$this->projects[$i]['qids']['consultant']}' AS operator_qid
                       FROM lime_tokens_{$this->projects[$i]['sid']} token
                           LEFT JOIN lime_survey_{$this->projects[$i]['sid']} survey ON token.token = survey.token
                           LEFT JOIN lime_answers status ON status.qid = {$this->projects[$i]['qids']['status']} AND survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['status']} = status.code

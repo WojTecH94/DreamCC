@@ -26,10 +26,10 @@ class TwigContactExtension extends \Twig_Extension
 
     public function genLink($contact, $user) {
         $link = $this->config['lime']['address']
-            . "sid/" . $this->config['lime']['sid']
+            . "sid/" . $contact['sid']
             . "/token/" . $contact['token']
             . "/lang//newtest/Y" . "?"
-            . $this->config['lime']['operator_question_id']
+            . $contact['sid'] . "X" . $contact['operator_gid'] . "X" .$contact['operator_qid']
             . "=". $user['login'] . "&token=" . $contact['token'];
 
         return $link;
