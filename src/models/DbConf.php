@@ -21,42 +21,48 @@ class DbConf {
 
         //multi projects configuration - don't know why I can't set it directly after class declaration;
         $this->projects[0] = array(
-            "sid" => '777',
-            "gid" => '1416',
+            "sid" => '246722',
+            "gid" => '1538', //gid Pole przed rozmową
+            "gid2" => '1539', //gid Rozmowa
             "qids" => array(
-               "status" => '20362',
-               "attempt" => '20363',
-               "contactDate" => '20361',
-               "rescheduleDate" => '20366',
-               "consultant" => '20365' 
+               "contactDate" => '20919',
+               "attempt" => '20920',
+               "status" => '20921',
+               "rescheduleDate" => '20922',
+               "consultant" => '20923',
+               "notes" => '20931' 
             ),
-            "project" => 'baza1'
+            "project" => 'Bez dziecka' //Ankieta Darczyńcy Indeksowi - ich dzieci nie ma ponownie w projekcie - zapraszamy do wyboru dowolnego dziecka(ID:246722)
         );
         
         $this->projects[1] = array(
-            "sid" => '888',
-            "gid" => '1417',
+            "sid" => '719653',
+            "gid" => '1527',
+            "gid2" => '1528', 
             "qids" => array(
-               "status" => '20368',
-               "attempt" => '20369',
-               "contactDate" => '20367',
-               "rescheduleDate" => '20372',
-               "consultant" => '20371' 
+               "contactDate" => '20801',
+               "attempt" => '20802',
+               "status" => '20803',
+               "rescheduleDate" => '20804',
+               "consultant" => '20805',
+               "notes" => '20844' 
             ),
-            "project" => 'baza2'
+            "project" => 'Z dzieckiem' //Ankieta Darczyńcy Indeksowi - dzieci z poprzedniej edycji(ID:719653)
         );
         
         $this->projects[2] = array(
-            "sid" => '999',
-            "gid" => '1418',
+            "sid" => '492173',
+            "gid" => '1531',
+            "gid2" => '1532', 
             "qids" => array(
-               "status" => '20374',
-               "attempt" => '20375',
-               "contactDate" => '20373',
-               "rescheduleDate" => '20378',
-               "consultant" => '20377' 
+               "contactDate" => '20825',
+               "attempt" => '20826',
+               "status" => '20827',
+               "rescheduleDate" => '20828',
+               "consultant" => '20829',
+               "notes" => '20841' 
             ),
-            "project" => 'baza3'
+            "project" => 'Podziękowania' //Ankieta Podziękowanie za ufundowanie Indeksu(ID:492173)
         );
         
         return $this;
@@ -98,21 +104,27 @@ class DbConf {
     //creates view v_contacts
     function createContactsView(){
         
+        //fix for the token attributes fuckUp
+        $operator_attribute = "attribute_16";
+        $reservation_date_attribute = "attribute_17";
+        $number_attribute = "attribute_6";
+        
+        
         //first query is a bit different
         $query = <<<SQL
         CREATE VIEW v_contacts AS
             SELECT token.firstname, token.lastname, token.token, 
-                    token.attribute_1 AS operator, -- login operatora/konsulatna
-                    token.attribute_2 AS reservation_date, -- data i godzina rezerwacji rekordu  
-                    token.attribute_3 AS number, -- numer telefonu
+                    token.{$operator_attribute} AS operator, -- login operatora/konsulatna
+                    token.{$reservation_date_attribute} AS reservation_date, -- data i godzina rezerwacji rekordu  
+                    token.{$number_attribute} AS number, -- numer telefonu
                     survey.startdate, -- data rozpoczęcia ankiety wg. lime
                     -- poniższe idki są do zmiany/generowania przy zmianie projektu
                     status.answer AS status,
                     attempt.answer AS attempt,
                     survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['contactDate']} AS contact_date, -- data kontaktu
                     survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['rescheduleDate']} AS reschedule_date, -- na kiedy przełożono rozmowę
-                    survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['consultant']} AS consultant  -- konsultant z odpowiedzi, po wypełnieniu ankiety powinien być ten sam co operator
-                    -- survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['contactDate']} AS notes -- uwagi po rozmowie
+                    survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['consultant']} AS consultant,  -- konsultant z odpowiedzi, po wypełnieniu ankiety powinien być ten sam co operator
+                    survey.{$this->projects[0]['sid']}X{$this->projects[0]['gid2']}X{$this->projects[0]['qids']['notes']} AS notes -- uwagi po rozmowie
                     ,'{$this->projects[0]['project']}' AS project
                     ,'{$this->projects[0]['sid']}' AS sid
                     ,'{$this->projects[0]['gid']}' AS operator_gid
@@ -128,17 +140,17 @@ SQL;
             $currQuery = <<<SQL
                 UNION ALL
                     SELECT token.firstname, token.lastname, token.token, 
-                            token.attribute_1 AS operator, -- login operatora/konsulatna
-                            token.attribute_2 AS reservation_date, -- data i godzina rezerwacji rekordu  
-                            token.attribute_3 AS number, -- numer telefonu
+                            token.{$operator_attribute} AS operator, -- login operatora/konsulatna
+                            token.{$reservation_date_attribute} AS reservation_date, -- data i godzina rezerwacji rekordu  
+                            token.{$number_attribute} AS number, -- numer telefonu
                             survey.startdate, -- data rozpoczęcia ankiety wg. lime
                             -- poniższe idki są do zmiany/generowania przy zmianie projektu
                             status.answer AS status,
                             attempt.answer AS attempt,
                             survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['contactDate']} AS contact_date, -- data kontaktu
                             survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['rescheduleDate']} AS reschedule_date, -- na kiedy przełożono rozmowę
-                            survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['consultant']} AS consultant  -- konsultant z odpowiedzi, po wypełnieniu ankiety powinien być ten sam co operator
-                            -- survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['contactDate']} AS notes -- uwagi po rozmowie
+                            survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid']}X{$this->projects[$i]['qids']['consultant']} AS consultant,  -- konsultant z odpowiedzi, po wypełnieniu ankiety powinien być ten sam co operator
+                            survey.{$this->projects[$i]['sid']}X{$this->projects[$i]['gid2']}X{$this->projects[$i]['qids']['notes']} AS notes -- uwagi po rozmowie
                             ,'{$this->projects[$i]['project']}' AS project
                             ,'{$this->projects[$i]['sid']}' AS sid
                             ,'{$this->projects[$i]['gid']}' AS operator_gid
@@ -241,7 +253,7 @@ SQL;
         //avg timings report
         $query = <<<SQL
                 CREATE VIEW v_avg_timings AS
-                    SELECT operator, ROUND(AVG(interviewtime/60),2) AS avg_time FROM v_timings
+                    SELECT operator, ROUND(AVG(interviewtime/60),2) AS avg_time FROM v_timings GROUP BY operator
 SQL;
         $result[3] = $this->db->query($query);
         return $result;
