@@ -5,9 +5,11 @@
 
 {% block content %}
 
-    <h2 class="bi">Statystyki</h2>
 
-    {% if bi_data.succeeded.num_rows %}
+
+    <h2 class="bi">Statystyki</h2>
+    
+    {% if bi_data.succeeded %}
     <table class="table table-hover table-bordered table-striped">
         <thead>
             <tr>
@@ -15,22 +17,48 @@
             </tr>
             <tr>
                 <th>Konsultant</th>
-                <th>Liczba połączeń</th>
+                <th># przeprowadzonych</th>
             </tr>
         </thead>
         <tbody>
-            {% for i in 1..(bi_data.succeeded.num_rows) if bi_data.succeeded.num_rows %}
-            {% set data = bi_data.succeeded.fetch_assoc() %}
+            {% for data in bi_data.succeeded %}
             <tr>
                 <td>{{ data.operator }}</td>
-                <td>{{ data.succeeded }}</td>
+                <td class="numeric">{{ data.succeeded }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% endif %}
 
-    {% if bi_data.timings.num_rows %}
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['Konsultant', 'Średni czas', { role: 'style' }],
+        {% for data in bi_data.timings %}
+            ['{{ data.operator }}' , {{ data.avg_time }}, '#9FC7A4'],
+        {% endfor %}
+      ]);
+
+      var options = {
+        title: 'Średni czas połączenia',
+        hAxis: {title: 'Konsultant', titleTextStyle: {color: 'black'}},
+        backgroundColor: {fill: '#eee'},
+        legend: {position: 'none'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+    }
+    </script>
+    
+    {% if bi_data.timings %}
     <table class="table table-hover table-bordered table-striped half">
         <thead>
             <tr>
@@ -42,11 +70,10 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in 1..(bi_data.timings.num_rows) if bi_data.timings.num_rows %}
-            {% set data = bi_data.timings.fetch_assoc() %}
+            {% for data in bi_data.timings %}
             <tr>
                 <td>{{ data.operator }}</td>
-                <td>{{ data.avg_time }}</td>
+                <td class="numeric">{{ data.avg_time }}</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -70,8 +97,8 @@
         {% set data = bi_data.left.fetch_assoc() %}
         <tr>
             <td>{{ data.operator }}</td>
-            <td>{{ data.left }}</td>
-            <td>{{ data.all }}</td>
+            <td class="numeric">{{ data.left }}</td>
+            <td class="numeric">{{ data.all }}</td>
         </tr>
         {% endfor %}
         </tbody>
@@ -103,11 +130,49 @@
             <tr>
                 <td class="operator">{{operator}}</td>
                 {% for k, value in data %}
-                <td>{{ value }}</td>
+                <td class="numeric">{{ value }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
+    <div id="chart_div" style="display: inline-block; width: 560px; height: 300px; margin: 0 auto 20px;"></div>
+    <div id="tempo_chart" style="display: inline-block; width: 560px; height: 300px; margin: 0 auto;"></div>
+   
+    <script type="text/javascript">
+      //google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart2);
+      function drawChart2() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date',
+              {% for operator, data in bi_data.rate.operators %}
+              '{{ operator }}',
+              {% endfor %}
+          ],
+          {% for date, data in bi_data.rate.dates %}
+                ['{{ date }}',
+                {% for operator, data in bi_data.rate.operators %}
+                {{data[date ~ '_t']}},
+                {% endfor %}
+            ],
+                {% endfor %}
+          //['2004',  1000,      400],
+          //['2005',  1170,      460],
+          //['2006',  660,       1120],
+          //['2007',  1030,      540]
+        ]);
+
+        var options = {
+          title: 'Wydajność zespołu konsultantów',
+          backgroundColor: {fill: '#eee'},
+          legend: {position: 'bottom'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('tempo_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+    
 {% endblock %}

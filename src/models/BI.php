@@ -20,14 +20,22 @@ class BI {
     function getSucceeded() {
         $query  = "SELECT * FROM no_of_succeeded";
         $result = $this->db->query($query);
-        return $result;
+        $return = array();
+        while($row = $result->fetch_assoc()) {
+            $return[] = $row;
+        }
+        return $return;
     }
 
     function getTimings() {
         $query  = "SELECT * FROM
           v_avg_timings";
         $result = $this->db->query($query);
-        return $result;
+        $return = array();
+        while($row = $result->fetch_assoc()) {
+            $return[] = $row;
+        }
+        return $return;
     }
 
     function getLeft() {
@@ -43,7 +51,7 @@ SQL;
 
     function getRate() {
         $query  = <<<SQL
-            SELECT cols.operator, cols.date,  calls.succeeded, worktime.worktime /60 AS `worktime`, calls.succeeded / (worktime.worktime/60) AS `tempo` FROM
+            SELECT cols.operator, cols.date,  IFNULL(calls.succeeded,0) AS succeeded, ROUND(IFNULL(worktime.worktime /60,0),2) AS `worktime`, ROUND(IFNULL(calls.succeeded / (worktime.worktime/60),0),2) AS `tempo` FROM
           (SELECT date, operator FROM
               (SELECT DATE(contact_date) AS `date`
                      FROM v_contacts
@@ -63,6 +71,7 @@ SQL;
         $return = array(
             "dates"     => array(),
             "operators" => array(),
+            "tempo_chart" => array()
         );
 
         while($row = $result->fetch_assoc()) {

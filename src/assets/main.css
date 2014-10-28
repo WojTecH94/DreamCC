@@ -23,6 +23,9 @@
     background-color: #C8FACE;
 }
 
+.table .numeric {
+    text-align: right;
+}
 
 .table thead th.main {
     background-color: #9FC7A4;
