@@ -23,3 +23,21 @@ SELECT * FROM
       Group By operator,DATE(contact_date)) AS calls
   ON worktime.operator = calls.operator AND worktime.date = calls.date;
   
+  
+  
+  --tempo matrix
+  SELECT cols.operator, cols.date,  calls.succeeded, worktime.worktime /60 AS `worktime`, calls.succeeded / (worktime.worktime/60) AS `tempo` FROM
+(SELECT date, operator FROM 
+	(SELECT DATE(contact_date) AS `date`
+       	FROM v_contacts 
+       	WHERE status = 'Przeprowadzona'
+      	Group By DATE(contact_date)) AS dates,
+	(SELECT operator FROM v_contacts GROUP BY operator) AS operators) AS cols
+        LEFT JOIN
+        (SELECT operator, DATE(contact_date) AS `date`, TIMESTAMPDIFF(MINUTE, min(contact_date) , max(contact_date)) `worktime` FROM v_contacts 
+      GROUP BY operator, DATE(contact_date) ) AS worktime ON cols.date = worktime.date AND cols.operator = worktime.operator
+      LEFT JOIN (SELECT operator, DATE(contact_date) AS `date`, count(1) AS succeeded
+       FROM v_contacts 
+       WHERE status = 'Przeprowadzona'
+      Group By operator,DATE(contact_date)) AS calls
+  ON worktime.operator = calls.operator AND worktime.date = calls.date;
