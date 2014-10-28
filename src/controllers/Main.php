@@ -6,7 +6,7 @@ class Main {
 
     var $app;
 
-    function __construct($app, $view, $log, $contact, $user, $dbconf) {
+    function __construct($app, $view, $log, $contact, $user, $dbconf, $bi) {
 
         $this->app  = $app;
         $this->view = $view;
@@ -15,6 +15,7 @@ class Main {
         $this->contact = $contact;
         $this->user    = $user;
         $this->dbconf  = $dbconf;
+        $this->bi      = $bi;
     }
 
     function setup() {
@@ -25,9 +26,9 @@ class Main {
         $this->app->get('/logout', array($this, 'logout'))->name('logout');
 
         $this->app->get('/contact', array($this, 'contact'))->name('contact');
-        
+
         $this->app->get('/project/select', array($this, 'select_project'))->name('select_project');
-        
+
         $this->app->get('/contact/search', array($this, 'contact_search_form'))
             ->name('contact_search_form');
         $this->app->post('/contact/search', array($this, 'contact_search_post'))
@@ -39,10 +40,13 @@ class Main {
             ->name('contact_left');
         $this->app->get('/contact/reserve', array($this, 'contact_reserve'))
             ->name('contact_reserve');
-      
+
         $this->app->get('/admin/prepare_views', array($this, 'prepare_views'))->name('prepare_views');
 
-        
+        $this->app->get('/bi', array($this, 'bi'))
+            ->name('bi');
+
+
     }
 
     function index() {
@@ -85,14 +89,14 @@ class Main {
         $user   = $this->user->get();
         $project   = $this->app->request->get('project');
         $result = $this->contact->get($user, $project); //add project parameter
-        
+
         $body = $this->view->render('record.html', array(
             'user'   => $user,
             'result' => $result
         ));
         $this->app->response->setBody($body);
     }
-    
+
     function select_project() {
         $this->log->addDebug("project selection route");
 
@@ -102,12 +106,12 @@ class Main {
             'user' => $user,
             'projects' => $projects
         ));
-        
+
         $this->app->response->setBody($body);
     }
-    
-    
-    
+
+
+
     function contact_search_form() {
 
         $this->log->addDebug("contact_search route");
@@ -176,12 +180,26 @@ class Main {
         ));
         $this->app->response->setBody($body);
     }
-    
+
     function prepare_views() {
+        return;
         $msg    = $this->dbconf->createViews();
         var_dump($msg);
         $msg    = $this->dbconf->createReports();
         var_dump($msg);
+    }
+
+    function bi() {
+
+        $user    = $this->user->get();
+        $bi_data = $this->bi->get();
+
+        $body = $this->view->render('bi.html', array(
+            'user'    => $user,
+            'bi_data' => $bi_data
+        ));
+
+        $this->app->response->setBody($body);
     }
 
 }

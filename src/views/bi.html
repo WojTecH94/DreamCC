@@ -1,0 +1,113 @@
+{% extends "_layout.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Record{% endblock %}
+
+{% block content %}
+
+    <h2 class="bi">Statystyki</h2>
+
+    {% if bi_data.succeeded.num_rows %}
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+            <tr>
+                <th class="main">Przedzwonionych w ostatnieh godzinie</th>
+            </tr>
+            <tr>
+                <th>Konsultant</th>
+                <th>Liczba połączeń</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in 1..(bi_data.succeeded.num_rows) if bi_data.succeeded.num_rows %}
+            {% set data = bi_data.succeeded.fetch_assoc() %}
+            <tr>
+                <td>{{ data.operator }}</td>
+                <td>{{ data.succeeded }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if bi_data.timings.num_rows %}
+    <table class="table table-hover table-bordered table-striped half">
+        <thead>
+            <tr>
+                <th class="main" colspan="2">Średni czas</th>
+            </tr>
+            <tr>
+                <th>Konsultant</th>
+                <th>Średni czas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in 1..(bi_data.timings.num_rows) if bi_data.timings.num_rows %}
+            {% set data = bi_data.timings.fetch_assoc() %}
+            <tr>
+                <td>{{ data.operator }}</td>
+                <td>{{ data.avg_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if bi_data.left.num_rows %}
+    <table class="table table-hover table-bordered table-striped half">
+        <thead>
+            <tr>
+                <th class="main" colspan="3">Pozostało połączeń</th>
+            </tr>
+            <tr>
+                <th>Konsultant</th>
+                <th>Pozostało</th>
+                <th>Wszystkich</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for i in 1..(bi_data.left.num_rows) if bi_data.left.num_rows %}
+        {% set data = bi_data.left.fetch_assoc() %}
+        <tr>
+            <td>{{ data.operator }}</td>
+            <td>{{ data.left }}</td>
+            <td>{{ data.all }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <table class="table table-hover table-bordered table-striped rates">
+        <thead>
+            <tr>
+                <th class="main" colspan="{{bi_data.rate.dates|length*3+1}}">Praca konsultanta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="header">
+                <th></th>
+                {% for date, data in bi_data.rate.dates %}
+                <th colspan="3" class="date">{{ date }}</th>
+                {% endfor %}
+            </tr>
+            <tr class="header">
+                <th>Konsultant</th>
+                {% for date, data in bi_data.rate.dates %}
+                <th>#przeprowadzonych</th>
+                <th>Czas pracy(h)</th>
+                <th>Tempo/h</th>
+                {% endfor %}
+            </tr>
+            {% for operator, data in bi_data.rate.operators %}
+            <tr>
+                <td class="operator">{{operator}}</td>
+                {% for k, value in data %}
+                <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

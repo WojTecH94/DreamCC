@@ -13,31 +13,31 @@ $container = new Container();
 $container['config'] = array(
 
     //production address
-    /*
-    "lime" => array(
-        "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/" //adres do ankiet LimeSurvey
-    ),
-    */
+
+    // "lime" => array(
+    //     "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/" //adres do ankiet LimeSurvey
+    // ),
+
     //dev address
     "lime" => array(
         "address" => "http://ankiety-dev.wiosna.org.pl/ankiety-dev/index.php/survey/index/" //adres do ankiet LimeSurvey
     ),
-    
+
     // production db
-    /*"db" => array(
+    "db" => array(
         'server'   => 'sql.wiosna.org.pl',
         'username' => 'serwer_wiosny_06',
         'password' => 'Xn4F9YlG5dt9',
         'database' => 'serwer_wiosny_06',
-    ), */
-    
+    ),
+
     // dev db
-    "db" => array(
-        'server'   => 'sql.wiosna.org.pl',
-        'username' => '04827858_limedev',
-        'password' => 'a&F6@EE,b%cB',
-        'database' => '04827858_limedev',
-    ), 
+    // "db" => array(
+    //     'server'   => 'sql.wiosna.org.pl',
+    //     'username' => '04827858_limedev',
+    //     'password' => 'a&F6@EE,b%cB',
+    //     'database' => '04827858_limedev',
+    // ),
 
     "view" => array(
         "path" => dirname(__FILE__) . '/views',
@@ -112,10 +112,22 @@ $container['dbconf_model'] = function($c) {
     return new \Dreamcc\Model\DbConf($c['db'], $c['log'], $c['cache']);
 };
 
+$container['bi_model'] = function($c) {
+    return new \Dreamcc\Model\BI($c['db'], $c['log'], $c['cache']);
+};
+
 $container['lime_model'] = function($c) {
     return new \Dreamcc\Model\Lime($c['config'], $c['log']);
 };
 
 $container['main_controller'] = function($c) {
-    return new \Dreamcc\Controller\Main($c['app'], $c['view'], $c['log'], $c['contact_model'], $c['user_model'], $c['dbconf_model']);
+    return new \Dreamcc\Controller\Main(
+        $c['app'],
+        $c['view'],
+        $c['log'],
+        $c['contact_model'],
+        $c['user_model'],
+        $c['dbconf_model'],
+        $c['bi_model']
+    );
 };

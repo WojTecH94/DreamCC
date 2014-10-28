@@ -1,0 +1,47 @@
+.table {
+    display: inline-table;
+}
+
+.table.half {
+    width: 48%;
+    margin-right: .5%;
+    margin-left: .5%;
+    /* min-width: 400px; */
+}
+
+
+@media only screen and (max-width: 992px) {
+    .table.half {
+        width: 100%;
+    }
+
+}
+
+
+.table-striped > tbody > tr:nth-child(2n) > td,
+.table-striped > tbody > tr:nth-child(2n) > th {
+    background-color: #C8FACE;
+}
+
+
+.table thead th.main {
+    background-color: #9FC7A4;
+    text-align: center;
+}
+
+.table.rates .header .date {
+    text-align: center;
+}
+
+.table.rates .header th {
+    background-color: #D1D1D1;
+    font-size: 20px;
+}
+
+.table.rates .operator {
+    font-weight: bold;
+}
+
+h2.bi {
+    margin-bottom: 1em;
+}
