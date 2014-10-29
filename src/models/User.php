@@ -12,11 +12,8 @@ class User {
 
     var $users = array(
         "test"        => "test",
-        "psliwinska"  => "cctest",
-        "mpaleczny"   => "ccliderzy",
-        "btumilowicz" => "ccliderzy",
-        "mlukasik"    => "ccliderzy",
-        "mwitkos"     => "ccliderzy"
+        "test2"  => "test",
+        "test3"   => "test"
     );
 
 

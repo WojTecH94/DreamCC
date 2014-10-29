@@ -19,17 +19,23 @@ $container['config'] = array(
     // ),
 
     //dev address
-    "lime" => array(
+    /*"lime" => array(
         "address" => "http://ankiety-dev.wiosna.org.pl/ankiety-dev/index.php/survey/index/" //adres do ankiet LimeSurvey
+    ),*/
+
+    //local address
+    "lime" => array(
+        "address" => "http://localhost/limesurvey/index.php/survey/index/" //adres do ankiet LimeSurvey
     ),
 
+    
     // production db
-    "db" => array(
-        'server'   => 'sql.wiosna.org.pl',
-        'username' => 'serwer_wiosny_06',
-        'password' => 'Xn4F9YlG5dt9',
-        'database' => 'serwer_wiosny_06',
-    ),
+//    "db" => array(
+//        'server'   => 'sql.wiosna.org.pl',
+//        'username' => 'serwer_wiosny_06',
+//        'password' => 'Xn4F9YlG5dt9',
+//        'database' => 'serwer_wiosny_06',
+//    ),
 
     // dev db
     // "db" => array(
@@ -39,6 +45,16 @@ $container['config'] = array(
     //     'database' => '04827858_limedev',
     // ),
 
+    //local db
+    "db" => array(
+        'server'   => 'localhost',
+        'username' => 'root',
+        'password' => '',
+        'database' => 'limesurvey',
+    ),
+
+    
+    
     "view" => array(
         "path" => dirname(__FILE__) . '/views',
         "options" => array(

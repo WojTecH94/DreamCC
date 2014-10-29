@@ -182,7 +182,7 @@ class Main {
     }
 
     function prepare_views() {
-        return;
+        //return;
         $msg    = $this->dbconf->createViews();
         var_dump($msg);
         $msg    = $this->dbconf->createReports();

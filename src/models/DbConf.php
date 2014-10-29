@@ -67,17 +67,31 @@ class DbConf {
 
         $this->projects[] = array(
             "sid" => '777',
-            "gid" => '1416',
-            "gid2" => '1420',
+            "gid" => '1',
+            "gid2" => '2',
             "qids" => array(
-               "contactDate" => '20361',
-               "attempt" => '20363',
-               "status" => '20362',
-               "rescheduleDate" => '20366',
-               "consultant" => '20365',
-               "notes" => '20380'
+               "contactDate" => '1',
+               "attempt" => '3',
+               "status" => '2',
+               "rescheduleDate" => '6',
+               "consultant" => '5',
+               "notes" => '7'
             ),
-            "project" => 'Testowa ankieta' //Ankieta Podziękowanie za ufundowanie Indeksu(ID:492173)
+            "project" => 'Badanie produktu' 
+        );
+        $this->projects[] = array(
+            "sid" => '473788',
+            "gid" => '3',
+            "gid2" => '4',
+            "qids" => array(
+               "contactDate" => '20',
+               "attempt" => '22',
+               "status" => '21',
+               "rescheduleDate" => '25',
+               "consultant" => '24',
+               "notes" => '26'
+            ),
+            "project" => 'Projekt sprzedazowy' 
         );
 
         return $this;

@@ -106,7 +106,7 @@ SQL;
         SELECT
             firstname, lastname, token, number, operator, project,
             IF(reservation_date= '' OR reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15, 'wolny', 'zarezerwowany') AS reserved,
-            status, attempt, contact_date -- , notes
+            status, attempt, contact_date , notes
         FROM v_contacts
         WHERE lastname LIKE '{$lastname}' OR number LIKE '{$number}'
 SQL;
