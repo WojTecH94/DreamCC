@@ -5,7 +5,12 @@
 
 {% block content %}
 
-
+<style>
+    body {
+        background-color: #eeeeee;
+    }
+    
+</style>
 
     <h2 class="bi">Statystyki</h2>
     
@@ -105,7 +110,7 @@
     </table>
     {% endif %}
 
-    <table class="table table-hover table-bordered table-striped rates">
+    <table class="table table-hover table-bordered table-striped rates" style="margin-right: 100px">
         <thead>
             <tr>
                 <th class="main" colspan="{{bi_data.rate.dates|length*3+1}}">Praca konsultanta</th>

@@ -36,8 +36,7 @@ class TwigContactExtension extends \Twig_Extension
     }
 
     public function present($contact) {
-        $presentation = "<p>Token: " . $contact['token'] . "<br/>"
-            . "Imię: " . $contact['firstname'] . "<br/>"
+        $presentation = "<p>Imię: " . $contact['firstname'] . "<br/>"
             . "Nazwisko: " . $contact['lastname'] . "<br/>"
             . "Status: " . $contact['status'] . "<br/>"
             . "Próba dotarcia: " . $contact['attempt'];

@@ -64,8 +64,8 @@
         <div class="jumbotron">
             <div class="container">
                 {% if not user.is_logged %}
-                <h1>Index</h1>
-                <p class="important">Welcome to my awesome homepage.</p>
+                <h1>Cześć!</h1>
+                <p class="important">Witaj w DreamCC. Zaloguj się <span class="glyphicon glyphicon-hand-up"></span></p>
                 {% else %}
                 {% block content %}{% endblock %}
                 {% endif %}
@@ -81,7 +81,7 @@
             </div>
             <hr/>
             <footer>
-                <p>Stowarzyszenie WIOSNA</p>
+                <p>DreamCC</p>
             </footer>
         </div> <!-- /container -->
 

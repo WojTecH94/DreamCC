@@ -7,6 +7,7 @@
             <th>Status</th>
             <th>Próba dotarcia</th>
             <th>Uwagi po rozmowie</th>
+            <th>Rozmowę przełożono na</th>
             <th>Rezerwacja</th>
             <th>Projekt</th>
             <th>Ankieta&raquo;</th>
@@ -19,7 +20,8 @@
             <td>{{ contact.lastname }}</td>
             <td>{{ contact.status }}</td>
             <td>{{ contact.attempt }}</td>
-            <td>{{ contact.notes }}</td> 
+            <td>{{ contact.notes }}</td>
+            <td>{{ contact.reschedule_date }}</td>
             <td>{{ contact.reserved }}</td>
             <td>{{ contact.project }}</td>
             {# link do reserve przekazujący tokena w GECIE #}
