@@ -6,93 +6,42 @@ namespace Dreamcc\Model;
 class DbConf {
 
     var $projects = array();
-
+    
     //contacts availability setup
     var $reservationTime = 15; //minutes
     var $notRespondingDelay = 1; //hours
     var $busyDelay = 15; //minutes
     var $respondentMissingDelay = 3; //hours
+    
+    function __construct($db, $log, $cache, $config) {
 
-    function __construct($db, $log, $cache) {
+        
+        // $this->config = $config;
+        //$this->views_suffix = "liderzy4"; //$this->config['views_config']['suffix'] ;// suffix dodawany do widoków, aby odróżnić projekty
 
         $this->db    = $db;
         $this->log   = $log;
         $this->cache = $cache;
 
-        //multi projects configuration - don't know why I can't set it directly after class declaration;
-        // $this->projects[0] = array(
-        //     "sid" => '246722',
-        //     "gid" => '1538', //gid Pole przed rozmową
-        //     "gid2" => '1539', //gid Rozmowa
-        //     "qids" => array(
-        //        "contactDate" => '20919',
-        //        "attempt" => '20920',
-        //        "status" => '20921',
-        //        "rescheduleDate" => '20922',
-        //        "consultant" => '20923',
-        //        "notes" => '20931'
-        //     ),
-        //     "project" => 'Bez dziecka' //Ankieta Darczyńcy Indeksowi - ich dzieci nie ma ponownie w projekcie - zapraszamy do wyboru dowolnego dziecka(ID:246722)
-        // );
-        //
-        // $this->projects[1] = array(
-        //     "sid" => '719653',
-        //     "gid" => '1527',
-        //     "gid2" => '1528',
-        //     "qids" => array(
-        //        "contactDate" => '20801',
-        //        "attempt" => '20802',
-        //        "status" => '20803',
-        //        "rescheduleDate" => '20804',
-        //        "consultant" => '20805',
-        //        "notes" => '20844'
-        //     ),
-        //     "project" => 'Z dzieckiem' //Ankieta Darczyńcy Indeksowi - dzieci z poprzedniej edycji(ID:719653)
-        // );
-        //
-        // $this->projects[2] = array(
-        //     "sid" => '492173',
-        //     "gid" => '1531',
-        //     "gid2" => '1532',
-        //     "qids" => array(
-        //        "contactDate" => '20825',
-        //        "attempt" => '20826',
-        //        "status" => '20827',
-        //        "rescheduleDate" => '20828',
-        //        "consultant" => '20829',
-        //        "notes" => '20841'
-        //     ),
-        //     "project" => 'Podziękowania' //Ankieta Podziękowanie za ufundowanie Indeksu(ID:492173)
-        // );
-
+        $this->config = $config;
+        $this->views_suffix = $this->config['project_config']['suffix'];
+        
+        
         $this->projects[] = array(
-            "sid" => '777',
-            "gid" => '1',
-            "gid2" => '2',
+            "sid" => '788688',
+            "gid" => '1598',
+            "gid2" => '1599',
             "qids" => array(
-               "contactDate" => '1',
-               "attempt" => '3',
-               "status" => '2',
-               "rescheduleDate" => '6',
-               "consultant" => '5',
-               "notes" => '7'
+               "contactDate" => '21472',
+               "attempt" => '21474',
+               "status" => '21473',
+               "rescheduleDate" => '21475',
+               "consultant" => '21478',
+               "notes" => '21480'
             ),
-            "project" => 'Badanie produktu' 
+            "project" => 'Liderzy IV' 
         );
-        $this->projects[] = array(
-            "sid" => '473788',
-            "gid" => '3',
-            "gid2" => '4',
-            "qids" => array(
-               "contactDate" => '20',
-               "attempt" => '22',
-               "status" => '21',
-               "rescheduleDate" => '25',
-               "consultant" => '24',
-               "notes" => '26'
-            ),
-            "project" => 'Projekt sprzedazowy' 
-        );
+        
 
         return $this;
     }
@@ -113,19 +62,20 @@ class DbConf {
     }
 
     function dropViews(){
-        $query = "DROP VIEW no_of_succeeded";
+        
+        $query = "DROP VIEW no_of_succeeded_" . $this->views_suffix;
         $result[0] = $this->db->query($query);
-        $query = "DROP VIEW no_of_tries";
+        $query = "DROP VIEW no_of_tries_" . $this->views_suffix;
         $result[1] = $this->db->query($query);
-        $query = "DROP VIEW v_available_contacts";
+        $query = "DROP VIEW v_available_contacts_" . $this->views_suffix;
         $result[2] = $this->db->query($query);
-        $query = "DROP VIEW v_avg_timings";
+        $query = "DROP VIEW v_avg_timings_" . $this->views_suffix;
         $result[3] = $this->db->query($query);
-        $query = "DROP VIEW v_contacts";
+        $query = "DROP VIEW v_contacts_" . $this->views_suffix;
         $result[4] = $this->db->query($query);
-        $query = "DROP VIEW v_left_contacts";
+        $query = "DROP VIEW v_left_contacts_" . $this->views_suffix;
         $result[5] = $this->db->query($query);
-        $query = "DROP VIEW v_timings";
+        $query = "DROP VIEW v_timings_" . $this->views_suffix;
         $result[6] = $this->db->query($query);
         return $result;
     }
@@ -141,7 +91,7 @@ class DbConf {
 
         //first query is a bit different
         $query = <<<SQL
-        CREATE VIEW v_contacts AS
+        CREATE VIEW v_contacts_{$this->views_suffix} AS
             SELECT token.firstname, token.lastname, token.token,
                     token.{$operator_attribute} AS operator, -- login operatora/konsulatna
                     token.{$reservation_date_attribute} AS reservation_date, -- data i godzina rezerwacji rekordu
@@ -192,7 +142,7 @@ SQL;
               $query = $query . $currQuery;
         }
         $query = $query . ' ORDER BY reservation_date';
-        var_dump($query);
+        //var_dump($query);
         $result = $this->db->query($query);
         return $result;
     }
@@ -201,8 +151,8 @@ SQL;
     function createAvailableContactsView(){
 
         $query = <<<SQL
-                CREATE VIEW v_available_contacts AS
-                SELECT * FROM v_contacts
+                CREATE VIEW v_available_contacts_{$this->views_suffix} AS
+                SELECT * FROM v_contacts_{$this->views_suffix}
                       WHERE
                             (attempt IN ('Pierwsza','Druga','') OR attempt IS NULL) -- (Próba dotarcia IN ('Pierwsza', 'Druga',) OR Próba dotarcia is  NULL)
                             AND
@@ -224,8 +174,8 @@ SQL;
     //creates v_left_contacts view
     function createLeftView(){
         $query = <<<SQL
-                CREATE VIEW v_left_contacts AS
-                    SELECT * FROM v_contacts
+                CREATE VIEW v_left_contacts_{$this->views_suffix} AS
+                    SELECT * FROM v_contacts_{$this->views_suffix}
                           WHERE
                                 (attempt IN ('Pierwsza','Druga','') OR attempt IS NULL) -- (Próba dotarcia IN ('Pierwsza', 'Druga',) OR Próba dotarcia is  NULL)
                                 AND (
@@ -243,16 +193,16 @@ SQL;
     function createReports(){
         //tries report
         $query = <<<SQL
-                CREATE VIEW no_of_tries AS
-                       SELECT operator, count(1) AS tries FROM v_contacts WHERE  TIMESTAMPDIFF(HOUR, contact_date, CURRENT_TIMESTAMP()) < 1  Group By operator
+                CREATE VIEW no_of_tries_{$this->views_suffix} AS
+                       SELECT operator, count(1) AS tries FROM v_contacts_{$this->views_suffix} WHERE  TIMESTAMPDIFF(HOUR, contact_date, CURRENT_TIMESTAMP()) < 1  Group By operator
 SQL;
         $result[0] = $this->db->query($query);
 
         //success report
         $query = <<<SQL
-                CREATE VIEW no_of_succeeded AS
+                CREATE VIEW no_of_succeeded_{$this->views_suffix} AS
                 SELECT operator, count(1) AS succeeded
-                  FROM v_contacts
+                  FROM v_contacts_{$this->views_suffix}
                   WHERE  ( TIMESTAMPDIFF(HOUR, contact_date, CURRENT_TIMESTAMP()) < 1 ) AND status = 'Przeprowadzona'
                   Group By operator
 SQL;
@@ -260,7 +210,7 @@ SQL;
 
         //timing report
         $query = <<<SQL
-               CREATE VIEW v_timings AS
+               CREATE VIEW v_timings_{$this->views_suffix} AS
                     SELECT answers.{$this->projects[0]['sid']}X{$this->projects[0]['gid']}X{$this->projects[0]['qids']['consultant']} AS operator, interviewtime
                         FROM lime_survey_{$this->projects[0]['sid']}_timings timings
                              INNER JOIN lime_survey_{$this->projects[0]['sid']} answers ON timings.id = answers.id
@@ -282,8 +232,8 @@ SQL;
 
         //avg timings report
         $query = <<<SQL
-                CREATE VIEW v_avg_timings AS
-                    SELECT operator, ROUND(AVG(interviewtime/60),2) AS avg_time FROM v_timings GROUP BY operator
+                CREATE VIEW v_avg_timings_{$this->views_suffix} AS
+                    SELECT operator, ROUND(AVG(interviewtime/60),2) AS avg_time FROM v_timings_{$this->views_suffix} GROUP BY operator
 SQL;
         $result[3] = $this->db->query($query);
         return $result;

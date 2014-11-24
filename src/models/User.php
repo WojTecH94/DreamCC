@@ -12,17 +12,25 @@ class User {
 
     var $users = array(
         "test"        => "test",
-        "test2"  => "test",
-        "test3"   => "test"
+        "mlukasik"    => "ccliderzy",
+        "mpaleczny"   => "ccliderzy",
+        "mkoniuszewska" => "ccliderzy",
+        "btumilowicz" => "ccliderzy",
+        "psliwinska"  => "ccliderzy"
     );
 
+    
 
-    function __construct($db, $log, $cache) {
+
+    function __construct($db, $log, $cache, $config) {
 
         $this->db    = $db;
         $this->log   = $log;
         $this->cache = $cache;
-
+        
+        $this->config = $config;
+        $this->views_suffix = $this->config['project_config']['suffix'];
+        
         $this->log->addDebug("user constructor");
 
         return $this;
@@ -97,7 +105,7 @@ class User {
         // pobieranie ilośći wybranych rekordów w ostatniej godzinie przez obecnie zalogowanego użytkownika
         $login = $this->db->escape_string($login);
 
-        $query = "SELECT tries FROM no_of_tries WHERE operator = '{$login}'";
+        $query = "SELECT tries FROM no_of_tries_" . $this->views_suffix . " WHERE operator = '{$login}'";
 
         return $this->_getValue($query, "tries");
 
@@ -106,7 +114,7 @@ class User {
     function getSucceeded($login) {
         // pobieranie ilości przeprowadzonych rozmów w ciągu ostatniej godziny
         $login = $this->db->escape_string($login);
-        $query = "SELECT succeeded FROM no_of_succeeded WHERE operator ='{$login}'";
+        $query = "SELECT succeeded FROM no_of_succeeded_" . $this->views_suffix . " WHERE operator ='{$login}'";
 
         return $this->_getValue($query, "succeeded");
     }
@@ -115,7 +123,7 @@ class User {
         // pobieranie ilości rekordów przypisanych do konsultanta
         $login = $this->db->escape_string($login);
         $query = "SELECT COUNT(1) AS `contacts`
-            FROM v_contacts WHERE operator = '{$login}' GROUP BY operator";
+            FROM v_contacts_" . $this->views_suffix . " WHERE operator = '{$login}' GROUP BY operator";
 
         return $this->_getValue($query, "contacts");
     }
@@ -125,7 +133,7 @@ class User {
         // pobieranie ilości rekordów nieprzedzwonionych przez konsultanta
         $login = $this->db->escape_string($login);
         $query = "SELECT COUNT(1) AS `left`
-            FROM v_left_contacts WHERE operator = '{$login}' GROUP BY operator";
+            FROM v_left_contacts_" . $this->views_suffix . " WHERE operator = '{$login}' GROUP BY operator";
 
         return $this->_getValue($query, "left");
     }
@@ -134,7 +142,7 @@ class User {
 
         // pobieranie średniego czasu potrzebnego do przeprowadzenia skutecznej rozmowy
         $login = $this->db->escape_string($login);
-        $query = "SELECT avg_time FROM v_avg_timings WHERE operator = '{$login}'";
+        $query = "SELECT avg_time FROM v_avg_timings_" . $this->views_suffix . " WHERE operator = '{$login}'";
 
         return $this->_getValue($query, "avg_time");
     }

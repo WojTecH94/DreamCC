@@ -14,9 +14,9 @@ $container['config'] = array(
 
     //production address
 
-    // "lime" => array(
-    //     "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/" //adres do ankiet LimeSurvey
-    // ),
+     "lime" => array(
+         "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/" //adres do ankiet LimeSurvey
+     ),
 
     //dev address
     /*"lime" => array(
@@ -24,18 +24,18 @@ $container['config'] = array(
     ),*/
 
     //local address
-    "lime" => array(
-        "address" => "http://localhost/limesurvey/index.php/survey/index/" //adres do ankiet LimeSurvey
-    ),
+//    "lime" => array(
+//        "address" => "http://localhost/limesurvey/index.php/survey/index/" //adres do ankiet LimeSurvey
+//    ),
 
     
     // production db
-//    "db" => array(
-//        'server'   => 'sql.wiosna.org.pl',
-//        'username' => 'serwer_wiosny_06',
-//        'password' => 'Xn4F9YlG5dt9',
-//        'database' => 'serwer_wiosny_06',
-//    ),
+    "db" => array(
+        'server'   => 'sql.wiosna.org.pl',
+        'username' => 'serwer_wiosny_06',
+        'password' => 'Xn4F9YlG5dt9',
+        'database' => 'serwer_wiosny_06',
+    ),
 
     // dev db
     // "db" => array(
@@ -46,14 +46,21 @@ $container['config'] = array(
     // ),
 
     //local db
-    "db" => array(
-        'server'   => 'localhost',
-        'username' => 'root',
-        'password' => '',
-        'database' => 'limesurvey',
-    ),
+//    "db" => array(
+//        'server'   => 'localhost',
+//        'username' => 'root',
+//        'password' => '',
+//        'database' => 'limesurvey',
+//    ),
 
     
+    //konfiguracja projektu 
+    "project_config" => array(
+               "suffix" => "liderzy4", //suffix który ma być dodany do widoków w bazie dotyczących tego projektu
+                 "defined_user" => true //czy konsultanci są przypisani do konkretnych projektów?
+    ),
+    
+
     
     "view" => array(
         "path" => dirname(__FILE__) . '/views',
@@ -117,19 +124,19 @@ $container['app'] = function($c) {
 };
 
 $container['contact_model'] = function($c) {
-    return new \Dreamcc\Model\Contact($c['db'], $c['log'], $c['cache']);
+    return new \Dreamcc\Model\Contact($c['db'], $c['log'], $c['cache'], $c['config']);
 };
 
 $container['user_model'] = function($c) {
-    return new \Dreamcc\Model\User($c['db'], $c['log'], $c['cache']);
+    return new \Dreamcc\Model\User($c['db'], $c['log'], $c['cache'], $c['config']);
 };
 
 $container['dbconf_model'] = function($c) {
-    return new \Dreamcc\Model\DbConf($c['db'], $c['log'], $c['cache']);
+    return new \Dreamcc\Model\DbConf($c['db'], $c['log'], $c['cache'], $c['config']);
 };
 
 $container['bi_model'] = function($c) {
-    return new \Dreamcc\Model\BI($c['db'], $c['log'], $c['cache']);
+    return new \Dreamcc\Model\BI($c['db'], $c['log'], $c['cache'], $c['config']);
 };
 
 $container['lime_model'] = function($c) {

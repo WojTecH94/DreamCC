@@ -4,11 +4,16 @@ namespace Dreamcc\Model;
 
 class Contact {
 
-    function __construct($db, $log, $cache) {
+    
+
+    function __construct($db, $log, $cache, $config) {
 
         $this->db    = $db;
         $this->log   = $log;
         $this->cache = $cache;
+        
+        $this->config = $config;
+        $this->views_suffix = $this->config['project_config']['suffix'];
 
         return $this;
     }
@@ -16,9 +21,18 @@ class Contact {
     function get($user, $project) {
         
         //TODO: good concurrency control
-        $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts WHERE project = '{$project}' LIMIT 1
+        //czy kontakty są przypisane do konstultantów
+        if($this->config['project_config']['defined_user']){
+            $query1 = <<<SQL
+                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts_{$this->views_suffix} WHERE project = '{$project}' AND operator = '{$user['login']}' LIMIT 1
 SQL;
+        }
+        else{
+            $query1 = <<<SQL
+                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts_{$this->views_suffix} WHERE project = '{$project}' LIMIT 1
+SQL;
+        }
+        
         $r1 = $this->db->query($query1);
         
         //fetch variables needed for the next queries
@@ -44,14 +58,15 @@ SQL;
 
     function getLeft() {
 
-        $query = "SELECT * FROM v_left_contacts";
+        $query = "SELECT * FROM v_left_contacts_" . $this->views_suffix;
         $result = $this->db->query($query);
 
         return $result;
     }
     
     function getAvailableContactsPerProject(){
-        $query = "SELECT project, sid, operator_gid, operator_qid, COUNT(1) as cnt  FROM v_available_contacts GROUP BY project, sid, operator_gid, operator_qid";
+        
+        $query = "SELECT project, sid, operator_gid, operator_qid, COUNT(1) as cnt  FROM v_available_contacts_" . $this->views_suffix . " GROUP BY project, sid, operator_gid, operator_qid";
         $result = $this->db->query($query);
         return $result;
     }
@@ -64,7 +79,7 @@ SQL;
             IF(reservation_date= '' OR reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15,'wolny', 'zarezerwowany') AS reserved,
             status, attempt, contact_date,
             consultant, reschedule_date -- , notes
-        FROM v_contacts
+        FROM v_contacts_{$this->views_suffix}
         WHERE consultant = '{$user['login']}' AND status = 'Inny termin'
         ORDER BY reschedule_date ASC
 SQL;
@@ -77,7 +92,7 @@ SQL;
     function reserve($user, $token) {
 
         $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_contacts WHERE token = '{$token}'
+                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_contacts_{$this->views_suffix} WHERE token = '{$token}'
 SQL;
         $r1 = $this->db->query($query1);
         
@@ -107,7 +122,7 @@ SQL;
             firstname, lastname, token, number, operator, project,
             IF(reservation_date= '' OR reservation_date IS NULL OR TIMESTAMPDIFF(MINUTE, reservation_date, CURRENT_TIMESTAMP()) >= 15, 'wolny', 'zarezerwowany') AS reserved,
             status, attempt, contact_date , notes, reschedule_date
-        FROM v_contacts
+        FROM v_contacts_{$this->views_suffix}
         WHERE lastname LIKE '{$lastname}' OR number LIKE '{$number}'
 SQL;
 

@@ -8,17 +8,23 @@ class BI {
     var $log;
 
 
-    function __construct($db, $log, $cache) {
+
+    function __construct($db, $log, $cache, $config) {
 
         $this->db    = $db;
         $this->log   = $log;
         $this->cache = $cache;
 
+        $this->config = $config;
+        $this->views_suffix = $this->config['project_config']['suffix'];
+        
+
+        
         return $this;
     }
 
     function getSucceeded() {
-        $query  = "SELECT * FROM no_of_succeeded";
+        $query  = "SELECT * FROM no_of_succeeded_" . $this->views_suffix;
         $result = $this->db->query($query);
         $return = array();
         while($row = $result->fetch_assoc()) {
@@ -29,7 +35,7 @@ class BI {
 
     function getTimings() {
         $query  = "SELECT * FROM
-          v_avg_timings";
+          v_avg_timings_" . $this->views_suffix;
         $result = $this->db->query($query);
         $return = array();
         while($row = $result->fetch_assoc()) {
@@ -42,8 +48,8 @@ class BI {
         $query  = <<<SQL
             SELECT a.operator, a.left, b.all FROM
           (SELECT operator, COUNT(1) AS `left` FROM
-            v_left_contacts GROUP BY operator) a
-            INNER JOIN (SELECT operator, COUNT(1) AS `all` FROM v_contacts GROUP BY operator) b  ON a.operator=b.operator;
+            v_left_contacts_{$this->views_suffix} GROUP BY operator) a
+            INNER JOIN (SELECT operator, COUNT(1) AS `all` FROM v_contacts_{$this->views_suffix} GROUP BY operator) b  ON a.operator=b.operator;
 SQL;
         $result = $this->db->query($query);
         return $result;
@@ -54,15 +60,15 @@ SQL;
             SELECT cols.operator, cols.date,  IFNULL(calls.succeeded,0) AS succeeded, ROUND(IFNULL(worktime.worktime /60,0),2) AS `worktime`, ROUND(IFNULL(calls.succeeded / (worktime.worktime/60),0),2) AS `tempo` FROM
           (SELECT date, operator FROM
               (SELECT DATE(contact_date) AS `date`
-                     FROM v_contacts
+                     FROM v_contacts_{$this->views_suffix}
                      WHERE status = 'Przeprowadzona'
                     Group By DATE(contact_date)) AS dates,
-              (SELECT operator FROM v_contacts GROUP BY operator) AS operators) AS cols
+              (SELECT operator FROM v_contacts_{$this->views_suffix} GROUP BY operator) AS operators) AS cols
                   LEFT JOIN
-                  (SELECT operator, DATE(contact_date) AS `date`, TIMESTAMPDIFF(MINUTE, min(contact_date) , max(contact_date)) `worktime` FROM v_contacts
+                  (SELECT operator, DATE(contact_date) AS `date`, TIMESTAMPDIFF(MINUTE, min(contact_date) , max(contact_date)) `worktime` FROM v_contacts_{$this->views_suffix}
                 GROUP BY operator, DATE(contact_date) ) AS worktime ON cols.date = worktime.date AND cols.operator = worktime.operator
                 LEFT JOIN (SELECT operator, DATE(contact_date) AS `date`, count(1) AS succeeded
-                 FROM v_contacts
+                 FROM v_contacts_{$this->views_suffix}
                  WHERE status = 'Przeprowadzona'
                 Group By operator,DATE(contact_date)) AS calls
             ON worktime.operator = calls.operator AND worktime.date = calls.date;
