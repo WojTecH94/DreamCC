@@ -56,8 +56,8 @@ $container['config'] = array(
     
     //konfiguracja projektu 
     "project_config" => array(
-               "suffix" => "liderzy4", //suffix który ma być dodany do widoków w bazie dotyczących tego projektu
-                 "defined_user" => true //czy konsultanci są przypisani do konkretnych projektów?
+               "suffix" => "CCIS", //suffix który ma być dodany do widoków w bazie dotyczących tego projektu
+                 "defined_user" => false //czy konsultanci są przypisani do konkretnych projektów?
     ),
     
 
