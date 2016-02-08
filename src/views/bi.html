@@ -1,0 +1,183 @@
+{% extends "_layout.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Record{% endblock %}
+
+{% block content %}
+
+<style>
+    body {
+        background-color: #eeeeee;
+    }
+    
+</style>
+
+    <h2 class="bi">Statystyki</h2>
+    
+    {% if bi_data.succeeded %}
+    <table class="table table-hover table-bordered table-striped">
+        <thead>
+            <tr>
+                <th class="main" colspan="2">Przedzwonionych w ostatnieh godzinie</th>
+            </tr>
+            <tr>
+                <th>Konsultant</th>
+                <th># przeprowadzonych</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in bi_data.succeeded %}
+            <tr>
+                <td>{{ data.operator }}</td>
+                <td class="numeric">{{ data.succeeded }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['Konsultant', 'Średni czas', { role: 'style' }],
+        {% for data in bi_data.timings %}
+            ['{{ data.operator }}' , {{ data.avg_time }}, '#9FC7A4'],
+        {% endfor %}
+      ]);
+
+      var options = {
+        title: 'Średni czas połączenia',
+        hAxis: {title: 'Konsultant', titleTextStyle: {color: 'black'}},
+        backgroundColor: {fill: '#eee'},
+        legend: {position: 'none'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+    }
+    </script>
+    
+    {% if bi_data.timings %}
+    <table class="table table-hover table-bordered table-striped half">
+        <thead>
+            <tr>
+                <th class="main" colspan="2">Średni czas</th>
+            </tr>
+            <tr>
+                <th>Konsultant</th>
+                <th>Średni czas</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in bi_data.timings %}
+            <tr>
+                <td>{{ data.operator }}</td>
+                <td class="numeric">{{ data.avg_time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    {% if bi_data.left.num_rows %}
+    <table class="table table-hover table-bordered table-striped half">
+        <thead>
+            <tr>
+                <th class="main" colspan="3">Pozostało połączeń</th>
+            </tr>
+            <tr>
+                <th>Konsultant</th>
+                <th>Pozostało</th>
+                <th>Wszystkich</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for i in 1..(bi_data.left.num_rows) if bi_data.left.num_rows %}
+        {% set data = bi_data.left.fetch_assoc() %}
+        <tr>
+            <td>{{ data.operator }}</td>
+            <td class="numeric">{{ data.left }}</td>
+            <td class="numeric">{{ data.all }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+    <table class="table table-hover table-bordered table-striped rates" style="margin-right: 100px">
+        <thead>
+            <tr>
+                <th class="main" colspan="{{bi_data.rate.dates|length*3+1}}">Praca konsultanta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="header">
+                <th></th>
+                {% for date, data in bi_data.rate.dates %}
+                <th colspan="3" class="date">{{ date }}</th>
+                {% endfor %}
+            </tr>
+            <tr class="header">
+                <th>Konsultant</th>
+                {% for date, data in bi_data.rate.dates %}
+                <th>#przeprowadzonych</th>
+                <th>Czas pracy(h)</th>
+                <th>Tempo/h</th>
+                {% endfor %}
+            </tr>
+            {% for operator, data in bi_data.rate.operators %}
+            <tr>
+                <td class="operator">{{operator}}</td>
+                {% for k, value in data %}
+                <td class="numeric">{{ value }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div id="chart_div" style="display: inline-block; width: 560px; height: 300px; margin: 0 auto 20px;"></div>
+    <div id="tempo_chart" style="display: inline-block; width: 560px; height: 300px; margin: 0 auto;"></div>
+   
+    <script type="text/javascript">
+      //google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart2);
+      function drawChart2() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date',
+              {% for operator, data in bi_data.rate.operators %}
+              '{{ operator }}',
+              {% endfor %}
+          ],
+          {% for date, data in bi_data.rate.dates %}
+                ['{{ date }}',
+                {% for operator, data in bi_data.rate.operators %}
+                {{data[date ~ '_t']}},
+                {% endfor %}
+            ],
+                {% endfor %}
+          //['2004',  1000,      400],
+          //['2005',  1170,      460],
+          //['2006',  660,       1120],
+          //['2007',  1030,      540]
+        ]);
+
+        var options = {
+          title: 'Wydajność zespołu konsultantów',
+          backgroundColor: {fill: '#eee'},
+          legend: {position: 'bottom'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('tempo_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+    
+{% endblock %}

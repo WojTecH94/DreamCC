@@ -1,0 +1,19 @@
+{% extends "_layout.html" %}
+
+{% block title %}Record{% endblock %}
+
+{% block content %}
+
+{% if result %}
+
+    {# to mi krwi napsuło. teraz można to usunać i z modelu usunąć podwójne wybieranie. Wcześniej tego nie zauważyłem i było podwójne fetch assoc #}
+    {# % set contact = result.fetch_assoc() % #}
+    {{ present(result)|raw }}
+    <p><a target="_blank" class="btn btn-primary btn-lg" role="button" href="{{ genLink(result, user) }}">Przejdź do ankiety &raquo;</a>
+    <a class="btn btn-primary btn-lg" role="button" href="{{ urlFor('select_project') }}">Pobierz kolejny &raquo;</a></p>
+
+{% else %}
+W tym momencie brak wolnych rekordów. Poczekaj aż rekordy wrócą do bazy
+{% endif %}
+
+{% endblock %}

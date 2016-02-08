@@ -1,0 +1,11 @@
+containers:
+    dreamcc_webdev_it:
+        image: michaloo/web-dev
+        run:
+            publish: ["80:80"]
+            volume: [".:/var/www"]
+            workdir: /var/www
+            interactive: true
+            tty: true
+            rm: true
+            cmd: ["-c", "bash"]

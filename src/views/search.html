@@ -1,0 +1,25 @@
+{% extends "_layout.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Record{% endblock %}
+
+{% block content %}
+    <h1>Wyszukiwarka kontaktów</h1>
+    <form role="form" action="{{ urlFor('contact_search_post') }}" method="post">
+        <div class="form-group">
+            <label for="lastnameInput">Nazwisko:</label>
+            <input id="lastnameInput" name="lastname" class="form-control" type="text" placeholder="{{ lastname }}">
+        </div>
+        <div class="form-group">
+            <label for="numberInput">Numer:</label>
+            <input id="numberInput" name="number" class="form-control" type="text" placeholder="{{ number }}">
+        </div>
+        <button type="submit" class="btn btn-default">Szukaj</button>
+    </form>
+    {% if result.num_rows > 0 %}
+
+    {{ macros.table(result) }}
+
+    {% endif %}
+
+{% endblock %}

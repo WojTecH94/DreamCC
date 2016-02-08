@@ -1,0 +1,34 @@
+{
+    "name": "dreamcc/dreamcc",
+    "description": "Dream Call Center solution",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Mateusz Ostafil",
+            "email": "mateusz.ostafil@gmail.com"
+        },
+        {
+            "name": "Michał Rączka",
+            "email": "me@michaloo.net"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "slim/slim": "2.*",
+        "twig/twig": "1.*",
+        "pimple/pimple": "~3.0",
+        "monolog/monolog": "1.10.*",
+        "desarrolla2/cache": "1.7.*",
+        "slim/views": "0.1.*"
+    },
+    "config": {
+        "vendor-dir": "src/vendor"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dreamcc\\Controller\\": "src/controllers/",
+            "Dreamcc\\Model\\": "src/models/",
+            "Dreamcc\\Lib\\": "src/lib/"
+        }
+    }
+}
