@@ -12,11 +12,20 @@
         <!-- Bootstrap core CSS -->
         <link href="{{ baseUrl() }}/assets/dist/css/bootstrap.css" rel="stylesheet">
 
-
         <!-- Custom styles for this template -->
         <link href="{{ baseUrl() }}/assets/jumbotron.css" rel="stylesheet">
 
         <link href="{{ baseUrl() }}/assets/main.css" rel="stylesheet">
+
+        {% block javascripts %} 
+            
+        {% endblock %}
+        
+        {% block styles %} 
+            
+        {% endblock %}
+        
+        
 
         <!--[if lt IE 9]>
             <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -28,10 +37,10 @@
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
                     </button>
                     <a class="navbar-brand" href="{{ urlFor('index') }}">Call Center</a>
                 </div>

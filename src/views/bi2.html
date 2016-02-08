@@ -1,0 +1,150 @@
+{% extends "_layout.html" %}
+{% import "_macros.html" as macros %}
+
+
+{% block title %}BI{% endblock %}
+
+{% block javascripts %}   
+    <script src="{{ baseUrl() }}/assets/bower_components/orb/deps/react-0.12.2.js" type="text/javascript"></script>
+    <script src="{{ baseUrl() }}/assets/bower_components/orb/dist/orb.min.js" type="text/javascript"></script>
+{% endblock %}
+
+{% block styles %}
+    <link href="{{ baseUrl() }}/assets/bower_components/orb/dist/orb.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+
+{% block content %}
+
+  <!--orb part--> 
+ <div id="pgrid" style="line-height: normal; font-size: 14px;"></div>
+    
+ <script type="text/javascript">
+    // data source
+  var data = [
+    ['Contoso Florida', 'Proseware LCD17W E202 Black', 'Proseware, Inc.', 'Economy', 'Monitors', 4, 509.55],
+    ['Contoso New Jersey', 'Adventure Works CRT15 E101 Black', 'Adventure Works', 'Economy', 'Monitors', 4, 351],
+    ['Contoso Japan', 'WWI Projector 480p LCD12 Silver', 'Wide World Importers', 'Regular', 'Projectors & Screens', 9, 2038.1]
+    ];
+ 
+
+  // pivot grid options
+  var config = {
+    dataSource: data,
+    dataHeadersLocation: 'columns',
+    theme: 'blue',
+    toolbar: {
+        visible: true
+    },
+    grandTotal: {
+        rowsvisible: true,
+        columnsvisible: true
+    },
+    subTotal: {
+        visible: true,
+        collapsed: true
+    },
+    fields: [
+        { name: '0', caption: 'Entity' },
+        { name: '1', caption: 'Product' },
+        { name: '2', caption: 'Manufacturer', sort: { order: 'asc' } },
+        { name: '3', caption: 'Class' },
+        { name: '4', caption: 'Category', sort: { order: 'desc' } },
+        { name: '5', caption: 'Quantity' },
+        {
+            name: '6',
+            caption: 'Amount',
+            dataSettings: {
+                  aggregateFunc: 'avg',
+                  formatFunc: function(value) {
+                      return Number(value).toFixed(0);
+                  }
+            }
+        }
+    ],
+    rows    : [ 'Manufacturer', 'Category' ],
+    columns : [ 'Class' ],
+    data    : [ 'Quantity', 'Amount' ],
+    preFilters : {
+        'Manufacturer': { 'Matches': /n/ },
+        'Amount'      : { '>':  40 }
+    },
+    width: 1110,
+    height: 645
+  };
+
+  // instantiate and show the pivot grid
+  new orb.pgridwidget(config).
+         render(document.getElementById('pgrid'));
+</script>
+
+
+
+<!--graphs part-->
+
+
+    <div id="chart_div" style="display: inline-block; width: 1200px; height: 400px; margin: 0 auto 20px;"></div>
+    <br>
+    <div id="tempo_chart" style="display: inline-block; width: 1200px; height: 400px; margin: 0 auto;"></div>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['Konsultant', 'Średni czas', { role: 'style' }],
+        {% for data in bi_data.timings %}
+            ['{{ data.operator }}' , {{ data.avg_time }}, '#9FC7A4'],
+        {% endfor %}
+      ]);
+
+      var options = {
+        title: 'Średni czas połączenia',
+        hAxis: {title: 'Konsultant', titleTextStyle: {color: 'black'}},
+        backgroundColor: {fill: '#eee'},
+        legend: {position: 'none'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+    }
+    </script>
+    <script type="text/javascript">
+      //google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart2);
+      function drawChart2() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date',
+              {% for operator, data in bi_data.rate.operators %}
+              '{{ operator }}',
+              {% endfor %}
+          ],
+          {% for date, data in bi_data.rate.dates %}
+                ['{{ date }}',
+                {% for operator, data in bi_data.rate.operators %}
+                {{data[date ~ '_t']}},
+                {% endfor %}
+            ],
+                {% endfor %}
+          //['2004',  1000,      400],
+          //['2005',  1170,      460],
+          //['2006',  660,       1120],
+          //['2007',  1030,      540]
+        ]);
+
+        var options = {
+          title: 'Wydajność zespołu konsultantów',
+          backgroundColor: {fill: '#eee'},
+          legend: {position: 'bottom'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('tempo_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+{% endblock %}

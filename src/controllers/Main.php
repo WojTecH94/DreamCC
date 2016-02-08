@@ -194,7 +194,7 @@ class Main {
         $user    = $this->user->get();
         $bi_data = $this->bi->get();
 
-        $body = $this->view->render('bi.html', array(
+        $body = $this->view->render('bi2.html', array(
             'user'    => $user,
             'bi_data' => $bi_data
         ));
