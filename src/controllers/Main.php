@@ -193,10 +193,13 @@ class Main {
 
         $user    = $this->user->get();
         $bi_data = $this->bi->get();
+        $bi2_data = $this->bi->getCallFact();
 
         $body = $this->view->render('bi2.html', array(
             'user'    => $user,
-            'bi_data' => $bi_data
+            'bi_data' => $bi_data,
+            'bi2_data' => $bi2_data
+            
         ));
 
         $this->app->response->setBody($body);

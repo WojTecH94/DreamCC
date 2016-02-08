@@ -126,4 +126,17 @@ SQL;
             "rate"      => $this->getRate()
         );
     }
+    
+    function getCallFact() {
+        $query  = <<<SQL
+            SELECT consultant,  Year(contact_date) as year, Month(contact_date) as month, Day(contact_date) as day
+		,DATE_FORMAT(contact_date,'%Y-%m-%d') as date
+		,attempt, status, CONCAT(firstname,' ',lastname) as client
+            FROM v_contacts_{$this->views_suffix};
+SQL;
+        $result = $this->db->query($query);
+
+        return $result;
+    }
+    
 }
