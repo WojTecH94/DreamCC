@@ -16,15 +16,78 @@
 
 {% block content %}
 
-{{ dump(bi2_data) }}
+
   <!--orb part--> 
  <div id="pgrid" style="line-height: normal; font-size: 14px;"></div>
     
  <script type="text/javascript">
+   //helper functions
+    function calculateWorktime(intersection, datasource){
+                     var maxDate = [];
+                     var minDate = [];
+                     var len = intersection === 'all' ? datasource.length : intersection.length;
+                     console.log('test');
+                     
+                     //wyznaczanie maksymalnej i minimalnej daty dla każdego dnia 
+                     for (var i = 0; i < len; i++){
+                         
+                        idx = intersection === 'all' ? i : intersection[i];
+                        
+                        var currDay = datasource[idx][3]; 
+                        var currTime = new Date(datasource[idx][5]);
+                        
+                        
+                        if(maxDate[currDay] === undefined){
+                            maxDate[currDay] = currTime;
+                        }
+                        if(minDate[currDay] === undefined){
+                            minDate[currDay] = currTime;
+                        }
+                        
+                        if(currTime.getTime() > maxDate[currDay].getTime()){
+                            maxDate[currDay] = currTime;
+                        }
+                        if(currTime.getTime() < minDate[currDay].getTime()){
+                            minDate[currDay] = currTime;
+                        }
+                        
+                     }
+
+                    // wyznaczanie sumarycznego czasu pracy
+                    var worktime = 0;
+                    for (var key in maxDate){
+                        worktime += maxDate[key] - minDate[key];
+                    }
+                    
+                    return worktime;
+    } 
+    
+    
+    
     // data source
+    var months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
+        "Lipiec", "Sierpień", "Wrzesień", "Październik" ,"Listopad","Grudzień"];
+    function Model (consultant, year, month, day, hour, time, attempt, status, project, client) {
+		this.consultant = consultant; 
+		this.year = year;
+		this.month = months[month-1] + " " + year;
+		this.day = day;
+		this.hour = hour + ":00";
+                this.time = time;
+		this.attempt = attempt;
+		this.status = status;
+                this.project = project;
+                this.client = client;
+                this.count = 1;
+                
+                return [this.consultant, this.year, this.month, this.day, this.hour, this.time, this.attempt, this.status, this.project, this.client, this.count, this.count];
+	};
+    
+    
   var data = [
     {% for data in bi2_data %}
-            ['{{ data.consultant }}' , '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.date }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.client }}', 1],
+           // ['{{ data.consultant }}' , '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.date }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.client }}', 1],
+           Model('{{ data.consultant }}', '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.hour }}', '{{ data.time }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.project }}', '{{ data.client }}'),
     {% endfor %}
  ];
     
@@ -33,7 +96,7 @@
   var config = {
     dataSource: data,
     dataHeadersLocation: 'columns',
-    theme: 'blue',
+    theme: 'green',
     toolbar: {
         visible: true
     },
@@ -50,12 +113,14 @@
         { name: '1', caption: 'Rok' },
         { name: '2', caption: 'Miesiąc' },
         { name: '3', caption: 'Dzień' },
-        { name: '4', caption: 'Data', sort: { order: 'desc' } },
-        { name: '5', caption: 'Próba' },
-        { name: '6', caption: 'Status' },
-        { name: '7', caption: 'Kontakt' },
+        { name: '4', caption: 'Godzina'},
+        { name: '5', caption: 'time'},
+        { name: '6', caption: 'Próba' },
+        { name: '7', caption: 'Status' },
+        { name: '8', caption: 'Projekt' },
+        { name: '9', caption: 'Kontakt' },
         {
-            name: '8',
+            name: '10',
             caption: '#Rozmów',
             dataSettings: {
                   aggregateFunc: 'sum',
@@ -63,18 +128,56 @@
                       return Number(value).toFixed(0);
                   }
             }
-        }
+        },
+        { name: '11', caption: 'Czas pracy [m]',
+            dataSettings: {
+                 aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
+//                     console.log(datafield);
+//                     console.log('----------------');
+//                     console.log(intersection); //indeksy wierszy, które biorą udział w wyliczaniu
+//                     console.log(datasource);
+//                     console.log(rowIndexes); //indeksy datasource, które spełniają warunki wierszy. prawdopodobnie to samo co intersection
+//                     console.log(colIndexes); //indeksy datasource, które spełniają warunki kolumn
+                     
+                     
+                    var wrk = calculateWorktime(intersection, datasource); 
+                    return (wrk/(1000*60*60)).toFixed(2);
+            }
+        }},
+        { name: '12', caption: 'Tempo',
+            dataSettings: {
+                 aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
+//                     console.log(datafield);
+//                     console.log('----------------');
+//                     console.log(intersection); //indeksy wierszy, które biorą udział w wyliczaniu
+//                     console.log(datasource);
+//                     console.log(rowIndexes); //indeksy datasource, które spełniają warunki wierszy. prawdopodobnie to samo co intersection
+//                     console.log(colIndexes); //indeksy datasource, które spełniają warunki kolumn
+                     
+                     
+                    var wrk = calculateWorktime(intersection, datasource);
+                    var cnt = intersection === 'all' ? datasource.length : intersection.length;
+                    return (cnt/(wrk/(1000*60*60))).toFixed(2);
+            }
+        }},
     ],
     rows    : [ 'Rok', 'Miesiąc', 'Dzień' ],
     columns : [ 'Konsultant' ],
-    data    : [ '#Rozmów'],
+    data    : [ '#Rozmów','Czas pracy [m]', 'Tempo'],
     width: 1110,
     height: 645
   };
 
+
+
+
   // instantiate and show the pivot grid
   new orb.pgridwidget(config).
          render(document.getElementById('pgrid'));
+ 
+ 
+ 
+ 
 </script>
 
 

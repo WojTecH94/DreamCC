@@ -129,10 +129,14 @@ SQL;
     
     function getCallFact() {
         $query  = <<<SQL
-            SELECT consultant,  Year(contact_date) as year, Month(contact_date) as month, Day(contact_date) as day
-		,DATE_FORMAT(contact_date,'%Y-%m-%d') as date
-		,attempt, status, CONCAT(firstname,' ',lastname) as client
-            FROM v_contacts_{$this->views_suffix};
+            SELECT consultant,  Year(contact_date) as year
+                ,Month(contact_date) as month
+                ,DATE_FORMAT(contact_date,'%Y-%m-%d') as day
+		,HOUR(contact_date) as hour
+                ,contact_date as time
+		,attempt, status, project
+                ,CONCAT(firstname,' ',lastname) as client
+            FROM v_contacts_{$this->views_suffix} ;
 SQL;
         $result = $this->db->query($query);
 
