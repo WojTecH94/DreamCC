@@ -112,9 +112,9 @@
         { name: '0', caption: 'Konsultant' },
         { name: '1', caption: 'Rok' },
         { name: '2', caption: 'Miesiąc' },
-        { name: '3', caption: 'Dzień' },
+        { name: '3', caption: 'Dzień', sort: {order: 'asc'}},
         { name: '4', caption: 'Godzina'},
-        { name: '5', caption: 'time'},
+        { name: '5', caption: 'Data'},
         { name: '6', caption: 'Próba' },
         { name: '7', caption: 'Status' },
         { name: '8', caption: 'Projekt' },
@@ -129,7 +129,7 @@
                   }
             }
         },
-        { name: '11', caption: 'Czas pracy [m]',
+        { name: '11', caption: 'Czas pracy [h]',
             dataSettings: {
                  aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
 //                     console.log(datafield);
@@ -144,16 +144,9 @@
                     return (wrk/(1000*60*60)).toFixed(2);
             }
         }},
-        { name: '12', caption: 'Tempo',
+        { name: '12', caption: 'Tempo/h',
             dataSettings: {
                  aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
-//                     console.log(datafield);
-//                     console.log('----------------');
-//                     console.log(intersection); //indeksy wierszy, które biorą udział w wyliczaniu
-//                     console.log(datasource);
-//                     console.log(rowIndexes); //indeksy datasource, które spełniają warunki wierszy. prawdopodobnie to samo co intersection
-//                     console.log(colIndexes); //indeksy datasource, które spełniają warunki kolumn
-                     
                      
                     var wrk = calculateWorktime(intersection, datasource);
                     var cnt = intersection === 'all' ? datasource.length : intersection.length;
@@ -163,7 +156,7 @@
     ],
     rows    : [ 'Rok', 'Miesiąc', 'Dzień' ],
     columns : [ 'Konsultant' ],
-    data    : [ '#Rozmów','Czas pracy [m]', 'Tempo'],
+    data    : [ '#Rozmów','Czas pracy [h]', 'Tempo/h'],
     width: 1110,
     height: 645
   };
