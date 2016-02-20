@@ -5,9 +5,9 @@
         <group>
             <file>file:/home/mostafil/projects/DreamCC/dreamcc/src/views/bi.html</file>
             <file>file:/home/mostafil/projects/DreamCC/dreamcc/src/views/bi2.html</file>
+            <file>file:/home/mostafil/projects/DreamCC/dreamcc/SQL/reports.sql</file>
             <file>file:/home/mostafil/projects/DreamCC/dreamcc/src/models/BI.php</file>
             <file>file:/home/mostafil/projects/DreamCC/dreamcc/src/bootstrap.php</file>
-            <file>file:/home/mostafil/projects/DreamCC/dreamcc/src/controllers/Main.php</file>
             <file>file:/home/mostafil/projects/DreamCC/dreamcc/src/models/DbConf.php</file>
         </group>
     </open-files>

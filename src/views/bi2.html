@@ -23,43 +23,44 @@
  <script type="text/javascript">
    //helper functions
     function calculateWorktime(intersection, datasource){
-                     var maxDate = [];
-                     var minDate = [];
+//                     var maxDate = [];
+//                     var minDate = [];
                      var len = intersection === 'all' ? datasource.length : intersection.length;
-                     console.log('test');
                      
-                     //wyznaczanie maksymalnej i minimalnej daty dla każdego dnia 
+                     var worktime = [];
                      for (var i = 0; i < len; i++){
                          
                         idx = intersection === 'all' ? i : intersection[i];
                         
                         var currDay = datasource[idx][3]; 
-                        var currTime = new Date(datasource[idx][5]);
+                        
+                        worktime[currDay] = datasource[idx][11];
                         
                         
-                        if(maxDate[currDay] === undefined){
-                            maxDate[currDay] = currTime;
-                        }
-                        if(minDate[currDay] === undefined){
-                            minDate[currDay] = currTime;
-                        }
-                        
-                        if(currTime.getTime() > maxDate[currDay].getTime()){
-                            maxDate[currDay] = currTime;
-                        }
-                        if(currTime.getTime() < minDate[currDay].getTime()){
-                            minDate[currDay] = currTime;
-                        }
+//                        if(maxDate[currDay] === undefined){
+//                            maxDate[currDay] = currTime;
+//                        }
+//                        if(minDate[currDay] === undefined){
+//                            minDate[currDay] = currTime;
+//                        }
+//                        
+//                        if(currTime.getTime() > maxDate[currDay].getTime()){
+//                            maxDate[currDay] = currTime;
+//                        }
+//                        if(currTime.getTime() < minDate[currDay].getTime()){
+//                            minDate[currDay] = currTime;
+//                        }
                         
                      }
 
                     // wyznaczanie sumarycznego czasu pracy
-                    var worktime = 0;
-                    for (var key in maxDate){
-                        worktime += maxDate[key] - minDate[key];
+                    var totalWorktime = 0;
+                    for (var key in worktime){
+                        
+                        totalWorktime += parseInt(worktime[key]);
                     }
-                    
-                    return worktime;
+                    console.log(totalWorktime);
+                    return totalWorktime*1.0;
     } 
     
     
@@ -67,7 +68,7 @@
     // data source
     var months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
         "Lipiec", "Sierpień", "Wrzesień", "Październik" ,"Listopad","Grudzień"];
-    function Model (consultant, year, month, day, hour, time, attempt, status, project, client) {
+    function Model (consultant, year, month, day, hour, time, attempt, status, project, client, worktime) {
 		this.consultant = consultant; 
 		this.year = year;
 		this.month = months[month-1] + " " + year;
@@ -78,16 +79,17 @@
 		this.status = status;
                 this.project = project;
                 this.client = client;
+                this.worktime = worktime;
                 this.count = 1;
                 
-                return [this.consultant, this.year, this.month, this.day, this.hour, this.time, this.attempt, this.status, this.project, this.client, this.count, this.count];
+                return [this.consultant, this.year, this.month, this.day, this.hour, this.time, this.attempt, this.status, this.project, this.client, this.count, this.worktime];
 	};
     
     
   var data = [
     {% for data in bi2_data %}
            // ['{{ data.consultant }}' , '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.date }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.client }}', 1],
-           Model('{{ data.consultant }}', '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.hour }}', '{{ data.time }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.project }}', '{{ data.client }}'),
+           Model('{{ data.consultant }}', '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.hour }}', '{{ data.time }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.project }}', '{{ data.client }}', '{{ data.worktime }}'),
     {% endfor %}
  ];
     
@@ -133,15 +135,15 @@
             dataSettings: {
                  aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
 //                     console.log(datafield);
-//                     console.log('----------------');
-//                     console.log(intersection); //indeksy wierszy, które biorą udział w wyliczaniu
-//                     console.log(datasource);
-//                     console.log(rowIndexes); //indeksy datasource, które spełniają warunki wierszy. prawdopodobnie to samo co intersection
-//                     console.log(colIndexes); //indeksy datasource, które spełniają warunki kolumn
+                     console.log('----------------');
+                     console.log(intersection); //indeksy wierszy, które biorą udział w wyliczaniu
+                     console.log(datasource);
+                     console.log(rowIndexes); //indeksy datasource, które spełniają warunki wierszy. prawdopodobnie to samo co intersection
+                     console.log(colIndexes); //indeksy datasource, które spełniają warunki kolumn
                      
                      
                     var wrk = calculateWorktime(intersection, datasource); 
-                    return (wrk/(1000*60*60)).toFixed(2);
+                    return (wrk/60).toFixed(2);
             }
         }},
         { name: '12', caption: 'Tempo/h',
@@ -150,7 +152,7 @@
                      
                     var wrk = calculateWorktime(intersection, datasource);
                     var cnt = intersection === 'all' ? datasource.length : intersection.length;
-                    return (cnt/(wrk/(1000*60*60))).toFixed(2);
+                    return (cnt/(wrk/60)).toFixed(2);
             }
         }},
     ],
