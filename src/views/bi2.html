@@ -6,10 +6,11 @@
 
 {% block javascripts %}   
     <script src="{{ baseUrl() }}/assets/bower_components/orb/deps/react-0.12.2.js" type="text/javascript"></script>
-    <script src="{{ baseUrl() }}/assets/bower_components/orb/dist/orb.min.js" type="text/javascript"></script>
+    <script src="{{ baseUrl() }}/assets/bower_components/orb/dist/orb.js" type="text/javascript"></script>
     <script type="text/javascript">
-       // jQuery('tr:visible').filter(':odd').css({'background-color': 'red'});
-        //jQuery('.inner-table-container tr').filter(':odd').css({'background-color': 'blue'});
+        // TODO: proper alterate row coloring
+        // jQuery('.data-cntr .row-visible:odd').css("background-color","red");
+        // jQuery('.data-cntr .row-visible').css("background-color","white");
     </script>
 {% endblock %}
 
