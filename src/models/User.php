@@ -11,12 +11,7 @@ class User {
     var $login;
 
     var $users = array(
-        "test"        => "test",
-        "mlukasik"    => "ccliderzy",
-        "mpaleczny"   => "ccliderzy",
-        "mkoniuszewska" => "ccliderzy",
-        "btumilowicz" => "ccliderzy",
-        "psliwinska"  => "ccliderzy"
+        "BiTest"        => "wiosna_tempo"
     );
 
     

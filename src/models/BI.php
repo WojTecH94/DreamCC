@@ -126,4 +126,29 @@ SQL;
             "rate"      => $this->getRate()
         );
     }
+    
+    function getCallFact() {
+        $query  = <<<SQL
+            SELECT fct.consultant,  Year(fct.contact_date) as year
+        ,Month(fct.contact_date) as month
+        ,DATE(fct.contact_date) as day
+        ,HOUR(fct.contact_date) as hour
+        ,fct.contact_date as time
+        ,fct.attempt, fct.status, fct.project
+        ,CONCAT(fct.firstname,' ',fct.lastname) as client
+        ,worktime.worktime
+    FROM v_contacts_{$this->views_suffix} AS fct
+    LEFT JOIN 
+        (SELECT consultant, DATE(contact_date) AS `date`
+                , TIMESTAMPDIFF(MINUTE, min(contact_date) 
+                , max(contact_date)) `worktime` 
+        FROM v_contacts_{$this->views_suffix}
+        GROUP BY consultant, DATE(contact_date) ) AS worktime 
+    ON DATE(fct.contact_date) = worktime.date AND fct.consultant = worktime.consultant;
+SQL;
+        $result = $this->db->query($query);
+
+        return $result;
+    }
+    
 }

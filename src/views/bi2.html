@@ -1,0 +1,247 @@
+{% extends "_layout.html" %}
+{% import "_macros.html" as macros %}
+
+
+{% block title %}BI{% endblock %}
+
+{% block javascripts %}   
+    <script src="{{ baseUrl() }}/assets/bower_components/orb/deps/react-0.12.2.js" type="text/javascript"></script>
+    <script src="{{ baseUrl() }}/assets/bower_components/orb/dist/orb.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        // TODO: proper alterate row coloring
+        // jQuery('.data-cntr .row-visible:odd').css("background-color","red");
+        // jQuery('.data-cntr .row-visible').css("background-color","white");
+    </script>
+{% endblock %}
+
+{% block styles %}
+    <link href="{{ baseUrl() }}/assets/bower_components/orb/dist/orb.min.css" rel="stylesheet" type="text/css"/>
+    <style>
+        /*orb rows color alteration*/
+        .inner-table-container tr:nth-child(odd) td{
+            background: rgba(159, 218, 139, 0.33) !important;
+        }
+        .orb-green .orb .cell-gt, .orb-green .orb .cell-st{
+            background-color: inherit;
+        }
+        .orb-green .orb .cell{
+            background-color: inherit;
+        }
+
+    </style>
+    
+{% endblock %}
+
+
+{% block content %}
+
+
+  <!--orb part--> 
+ <div id="pgrid" style="line-height: normal; font-size: 14px;"></div>
+    
+ <script type="text/javascript">
+   //helper functions
+    function calculateWorktime(intersection, datasource){
+
+                     var len = intersection === 'all' ? datasource.length : intersection.length;
+                     
+                     var worktime = [];
+                     for (var i = 0; i < len; i++){
+                        idx = intersection === 'all' ? i : intersection[i];
+                        var currDay = datasource[idx][3]; 
+                        worktime[currDay] = datasource[idx][11];
+                          
+                     }
+
+                    // wyznaczanie sumarycznego czasu pracy
+                    var totalWorktime = 0;
+                    for (var key in worktime){
+                        
+                        totalWorktime += parseInt(worktime[key]);
+                    }
+                    
+                    return totalWorktime*1.0;
+    } 
+    
+    
+    
+    // data source
+    var months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec",
+        "Lipiec", "Sierpień", "Wrzesień", "Październik" ,"Listopad","Grudzień"];
+    function Model (consultant, year, month, day, hour, time, attempt, status, project, client, worktime) {
+		this.consultant = consultant; 
+		this.year = year;
+		this.month = months[month-1] + " " + year;
+		this.day = day;
+		this.hour = hour + ":00";
+                this.time = time;
+		this.attempt = attempt;
+		this.status = status;
+                this.project = project;
+                this.client = client;
+                this.worktime = worktime;
+                this.count = 1;
+                
+                return [this.consultant, this.year, this.month, this.day, this.hour, this.time, this.attempt, this.status, this.project, this.client, this.count, this.worktime];
+	};
+    
+    
+  var data = [
+    {% for data in bi2_data %}
+           // ['{{ data.consultant }}' , '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.date }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.client }}', 1],
+           Model('{{ data.consultant }}', '{{ data.year }}', '{{ data.month }}', '{{ data.day }}', '{{ data.hour }}', '{{ data.time }}', '{{ data.attempt }}', '{{ data.status }}', '{{ data.project }}', '{{ data.client }}', '{{ data.worktime }}'),
+    {% endfor %}
+ ];
+    
+
+  // pivot grid options
+  var config = {
+    dataSource: data,
+    dataHeadersLocation: 'columns',
+    theme: 'green',
+    toolbar: {
+        visible: true
+    },
+    grandTotal: {
+        rowsvisible: true,
+        columnsvisible: true
+    },
+    subTotal: {
+        visible: true,
+        collapsed: true
+    },
+    fields: [
+        { name: '0', caption: 'Konsultant' },
+        { name: '1', caption: 'Rok' },
+        { name: '2', caption: 'Miesiąc' },
+        { name: '3', caption: 'Dzień', sort: {order: 'asc'}},
+        { name: '4', caption: 'Godzina'},
+        { name: '5', caption: 'Data'},
+        { name: '6', caption: 'Próba' },
+        { name: '7', caption: 'Status' },
+        { name: '8', caption: 'Projekt' },
+        { name: '9', caption: 'Kontakt' },
+        {
+            name: '10',
+            caption: '#Rozmów',
+            dataSettings: {
+                  aggregateFunc: 'sum',
+                  formatFunc: function(value) {
+                      return Number(value).toFixed(0);
+                  }
+            }
+        },
+        { name: '11', caption: 'Czas pracy [h]',
+            dataSettings: {
+                 aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
+//                     console.log(datafield);
+//                     console.log('----------------');
+//                     console.log(intersection); //indeksy wierszy, które biorą udział w wyliczaniu
+//                     console.log(datasource);
+//                     console.log(rowIndexes); //indeksy datasource, które spełniają warunki wierszy. prawdopodobnie to samo co intersection
+//                     console.log(colIndexes); //indeksy datasource, które spełniają warunki kolumn
+                     
+                     
+                    var wrk = calculateWorktime(intersection, datasource); 
+                    return (wrk/60).toFixed(2);
+            }
+        }},
+        { name: '12', caption: 'Tempo/h',
+            dataSettings: {
+                 aggregateFunc: function(datafield, intersection, datasource, rowIndexes, colIndexes) {
+                     
+                    var wrk = calculateWorktime(intersection, datasource);
+                    var cnt = intersection === 'all' ? datasource.length : intersection.length;
+                    return (cnt/(wrk/60)).toFixed(2);
+            }
+        }},
+    ],
+    rows    : [ 'Rok', 'Miesiąc', 'Dzień' ],
+    columns : [ 'Konsultant' ],
+    data    : [ '#Rozmów','Czas pracy [h]', 'Tempo/h'],
+    width: 1110,
+    height: 645
+  };
+
+
+
+
+  // instantiate and show the pivot grid
+  new orb.pgridwidget(config).
+         render(document.getElementById('pgrid'));
+ 
+ 
+ 
+ 
+</script>
+
+
+
+<!--graphs part-->
+
+
+    <div id="chart_div" style="display: inline-block; width: 1200px; height: 400px; margin: 0 auto 20px;"></div>
+    <br>
+    <div id="tempo_chart" style="display: inline-block; width: 1200px; height: 400px; margin: 0 auto;"></div>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+      var data = google.visualization.arrayToDataTable([
+        ['Konsultant', 'Średni czas', { role: 'style' }],
+        {% for data in bi_data.timings %}
+            ['{{ data.operator }}' , {{ data.avg_time }}, '#9FC7A4'],
+        {% endfor %}
+      ]);
+
+      var options = {
+        title: 'Średni czas połączenia',
+        hAxis: {title: 'Konsultant', titleTextStyle: {color: 'black'}},
+        backgroundColor: {fill: '#eee'},
+        legend: {position: 'none'}
+      };
+
+      var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+
+    }
+    </script>
+    <script type="text/javascript">
+      //google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart2);
+      function drawChart2() {
+        var data = google.visualization.arrayToDataTable([
+          ['Date',
+              {% for operator, data in bi_data.rate.operators %}
+              '{{ operator }}',
+              {% endfor %}
+          ],
+          {% for date, data in bi_data.rate.dates %}
+                ['{{ date }}',
+                {% for operator, data in bi_data.rate.operators %}
+                {{data[date ~ '_t']}},
+                {% endfor %}
+            ],
+                {% endfor %}
+          //['2004',  1000,      400],
+          //['2005',  1170,      460],
+          //['2006',  660,       1120],
+          //['2007',  1030,      540]
+        ]);
+
+        var options = {
+          title: 'Wydajność zespołu konsultantów',
+          backgroundColor: {fill: '#eee'},
+          legend: {position: 'bottom'}
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('tempo_chart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+{% endblock %}
