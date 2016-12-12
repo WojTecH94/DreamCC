@@ -11,7 +11,31 @@ class User {
     var $login;
 
     var $users = array(
-        "BiTest"        => "wiosna_tempo"
+		"test1"        => "test",
+		"test2"        => "test",
+		"test3"        => "test",
+		"test4"        => "test",
+		"test5"        => "test",
+		"test6"        => "test",
+		"test7"        => "test",
+		"test8"        => "test",
+		"test9"        => "test",
+		"test10"        => "test",
+		"test10"        => "test",
+		"test11"        => "test",
+		"mpaleczny" => "CCdobroczyncy",
+		"kpasternak" => "CCdobroczyncy",
+		"epermus" => "CCdobroczyncy",
+		"irachon" => "CCdobroczyncy",
+		"stumilowicz" => "CCdobroczyncy",
+		"awaligorska" => "CCdobroczyncy",
+		"kwojtowicz" => "CCdobroczyncy",
+		"awychowaniec" => "CCdobroczyncy",
+		"dszewczyk" => "CCdobroczyncy",
+		"astrzepek" => "CCdobroczyncy",
+		"pzalesna" => "CCdobroczyncy",
+		"psojka" => "CCdobroczyncy",
+		"jzakreta" => "CCdobroczyncy"
     );
 
     

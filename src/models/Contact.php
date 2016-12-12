@@ -19,17 +19,43 @@ class Contact {
     }
 
     function get($user, $project) {
-        
-        //TODO: good concurrency control
+		//blokada
+		$que0 = <<<SQL
+			START TRANSACTION
+SQL;
+		$p0 = $this->db->query($que0);
+		//WL: Moj posob na konkurencje: w stworzonej tabeli op_id_tab mamy kolumne project (nazwa projektu) oraz op_id (indeks malejacy od 10 do 0) -> line: 49
+		$que1 = <<<SQL
+			SELECT op_id from op_id_tab where project = '{$project}' FOR UPDATE
+SQL;
+		$p1 = $this->db->query($que1);
+		$wier = mysqli_fetch_assoc($p1);
+		$op_id = ($wier['op_id'])% 10;
+		$que2 = <<<SQL
+                UPDATE op_id_tab SET op_id = (op_id -1) WHERE project = '{$project}'
+SQL;
+		$p2 = $this->db->query($que2);
+		//koniec blokady	
+        if ($p1 and $p2) {
+			$que3 = <<<SQL
+			COMMIT
+SQL;
+		} else {
+			$que3 = <<<SQL
+			ROLLBACK
+SQL;
+		}
+		$p3 = $this->db->query($que3);
         //czy kontakty są przypisane do konstultantów
         if($this->config['project_config']['defined_user']){
             $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts_{$this->views_suffix} WHERE project = '{$project}' AND operator = '{$user['login']}' LIMIT 1
+                SELECT distinct token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts_{$this->views_suffix} WHERE project = '{$project}' AND operator = '{$user['login']}' LIMIT {$op_id},1
 SQL;
         }
         else{
+			//a tutaj wyszukujemy rekord o numerze op_id co powoduje ze kazde z wywolan "pobierz rekord" bedzie bralo inny kontakt
             $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts_{$this->views_suffix} WHERE project = '{$project}' LIMIT 1
+                SELECT distinct token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_available_contacts_{$this->views_suffix} WHERE project = '{$project}' LIMIT {$op_id},1
 SQL;
         }
         
@@ -50,8 +76,7 @@ SQL;
                 UPDATE lime_tokens_{$sid} SET attribute_1 = '{$user['login']}', attribute_2 = CURRENT_TIMESTAMP() WHERE token = '{$token}'
 SQL;
         $r3 = $this->db->query($query3);
-
-        
+		
         return $row;
     }
 
@@ -90,9 +115,12 @@ SQL;
     }
 
     function reserve($user, $token) {
+				$query0 = <<<SQL
+		START TRANSACTION
+SQL;
 
         $query1 = <<<SQL
-                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_contacts_{$this->views_suffix} WHERE token = '{$token}'
+                SELECT token, firstname, lastname, status, attempt, project, sid, operator_gid, operator_qid  FROM v_contacts_{$this->views_suffix} WHERE token = '{$token}' FOR UPDATE
 SQL;
         $r1 = $this->db->query($query1);
         
@@ -111,7 +139,16 @@ SQL;
                 UPDATE lime_tokens_{$sid} SET attribute_1 = '{$user['login']}', attribute_2 = CURRENT_TIMESTAMP() WHERE token = '{$token}'
 SQL;
         $r3 = $this->db->query($query3);
-
+        if ($r1 and $r2 and $r3) {
+		$query4 = <<<SQL
+		COMMIT
+SQL;
+		} else {
+		$query4 = <<<SQL
+		ROLLBACK
+SQL;
+		}
+				$r4 = $this->db->query($query4);
         
         return $row;
     }

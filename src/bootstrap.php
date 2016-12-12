@@ -15,7 +15,7 @@ $container['config'] = array(
     //production address
 
      "lime" => array(
-         "address" => "http://serwer-wiosny.home.pl/ankiety02/index.php/survey/index/" //adres do ankiet LimeSurvey
+         "address" => "http://badania.wiosna.org.pl/index.php/survey/index/" //adres do ankiet LimeSurvey
      ),
 
     //dev address
@@ -31,10 +31,10 @@ $container['config'] = array(
     
     // production db
     "db" => array(
-        'server'   => 'sql.wiosna.org.pl',
-        'username' => 'serwer_wiosny_06',
-        'password' => 'Xn4F9YlG5dt9',
-        'database' => 'serwer_wiosny_06',
+        'server'   => 'localhost',
+        'username' => 'lime_rw',
+        'password' => 'Xid4eiN7ooGhoor3kei3',
+        'database' => 'lime',
     ),
 
     // dev db
@@ -56,7 +56,7 @@ $container['config'] = array(
     
     //konfiguracja projektu 
     "project_config" => array(
-               "suffix" => "CCIS", //suffix który ma być dodany do widoków w bazie dotyczących tego projektu
+               "suffix" => "CC_test", //suffix który ma być dodany do widoków w bazie dotyczących tego projektu
                  "defined_user" => false //czy konsultanci są przypisani do konkretnych projektów?
     ),
     

@@ -28,18 +28,18 @@ class DbConf {
         
         
         $this->projects[] = array(
-            "sid" => '788688',
-            "gid" => '1598',
-            "gid2" => '1599',
+            "sid" => '429911',
+            "gid" => '56',
+            "gid2" => '57',
             "qids" => array(
-               "contactDate" => '21472',
-               "attempt" => '21474',
-               "status" => '21473',
-               "rescheduleDate" => '21475',
-               "consultant" => '21478',
-               "notes" => '21480'
+               "contactDate" => '650',
+               "attempt" => '652',
+               "status" => '651',
+               "rescheduleDate" => '653',
+               "consultant" => '655',
+               "notes" => '656'
             ),
-            "project" => 'Liderzy IV' 
+            "project" => 'CC_test' 
         );
         
 
@@ -58,6 +58,8 @@ class DbConf {
        $msg[1] = $this->createContactsView();
        $msg[2] = $this->createAvailableContactsView();
        $msg[3] = $this->createLeftView();
+	   $msg[4] = $this->createControllTable();
+	   $msg[5] = $this->changeCharsetForIndexing();
        return $msg;
     }
 
@@ -239,8 +241,32 @@ SQL;
         return $result;
    }
 
-
-
+    function createControllTable(){
+        //table to controll concurency
+        $query = <<<SQL
+			CREATE TABLE IF NOT EXISTS op_id_tab (
+			  project varchar(40) COLLATE utf8mb4_unicode_ci NOT NULL,
+			  op_id int(11) unsigned NOT NULL DEFAULT '4294967295',
+			  PRIMARY KEY (`project`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+SQL;
+		$result[1] = $this->db->query($query);
+		//and record for the current project
+        $query = <<<SQL
+			INSERT IGNORE INTO op_id_tab ( project ) VALUES ('{$this->projects[0]['project']}')
+SQL;
+        $result[2] = $this->db->query($query);
+        return $result;
+   }
+   function changeCharsetForIndexing(){
+        //changing charset for survey table to enable indexing (great optimalization)
+        $query = <<<SQL
+			ALTER TABLE lime_survey_{$this->projects[0]['sid']}
+			MODIFY COLUMN `token` varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL;
+SQL;
+		$result[1] = $this->db->query($query);
+        return $result;
+   }
 
 
 }
